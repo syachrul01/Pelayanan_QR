@@ -9,6 +9,9 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
     
+    <!-- Swiper CSS untuk fitur geser (carousel) -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css" />
+    
     <script src="https://cdn.tailwindcss.com"></script>
     <script>
         tailwind.config = {
@@ -30,7 +33,6 @@
         .modal-enter-active { opacity: 1; transform: translateY(0) scale(1); transition: opacity 400ms ease-out, transform 400ms ease-out; }
         ::-webkit-scrollbar { display: none; }
         
-        /* Animasi transisi antar halaman menu dan form */
         .view-hidden { display: none; }
         .view-enter { animation: fadeSlideUp 0.4s ease forwards; }
         
@@ -39,11 +41,15 @@
             to { opacity: 1; transform: translateY(0); }
         }
 
-        /* Styling custom untuk radio button kategori agar terlihat seperti tombol biasa */
         .category-radio:checked + div {
             border-color: #E3232A;
             background-color: #fef2f2;
             color: #E3232A;
+        }
+
+        /* Customisasi Swiper Pagination (Titik-titik indikator) */
+        .swiper-pagination-bullet-active {
+            background-color: #E3232A !important;
         }
     </style>
 </head>
@@ -78,8 +84,8 @@
                 <p class="text-sm text-gray-500 font-semibold">Pilih menu untuk melanjutkan</p>
             </div>
 
-            <!-- Tombol Promo -->
-            <button class="group w-full bg-gradient-to-br from-yogyaOrange to-yogyaYellow text-white p-1 rounded-3xl shadow-lg shadow-orange-200 active:scale-[0.98] transition-all">
+            <!-- Tombol Promo (Sekarang memanggil view promoView) -->
+            <button onclick="toggleView('promoView')" class="group w-full bg-gradient-to-br from-yogyaOrange to-yogyaYellow text-white p-1 rounded-3xl shadow-lg shadow-orange-200 active:scale-[0.98] transition-all">
                 <div class="bg-white/20 backdrop-blur-sm rounded-full flex items-center justify-between p-4 px-6 h-full">
                     <div class="flex items-center gap-4">
                         <div class="bg-white text-yogyaOrange p-2 rounded-2xl shadow-sm">
@@ -91,7 +97,7 @@
                 </div>
             </button>
             
-            <!-- Tombol Keluhan dan Saran (Trigger ganti view) -->
+            <!-- Tombol Keluhan dan Saran -->
             <button onclick="toggleView('formView')" class="group w-full bg-gradient-to-br from-yogyaRed to-red-400 text-white p-1 rounded-3xl shadow-lg shadow-red-200 active:scale-[0.98] transition-all">
                 <div class="bg-white/20 backdrop-blur-sm rounded-full flex items-center justify-between p-4 px-6 h-full">
                     <div class="flex items-center gap-4">
@@ -120,7 +126,6 @@
 
         <!-- VIEW 2: FORMULIR KELUHAN & SARAN -->
         <div id="formView" class="w-full view-hidden">
-            <!-- Header Form & Tombol Kembali -->
             <div class="flex items-center mb-6">
                 <button onclick="toggleView('menuView')" class="p-2 bg-gray-100 rounded-full hover:bg-gray-200 active:scale-90 transition mr-4 text-gray-600">
                     <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M15 19l-7-7 7-7"></path></svg>
@@ -130,11 +135,8 @@
                     <p class="text-xs text-gray-500 font-semibold">Suara Anda sangat berarti bagi kami</p>
                 </div>
             </div>
-
-            <!-- Form -->
+            <!-- (Isi form sama persis dengan sebelumnya) -->
             <form id="pengaduanForm" class="space-y-5" onsubmit="submitForm(event)">
-                
-                <!-- Kategori Pilihan (Grid Radio Buttons) -->
                 <div>
                     <label class="block text-sm font-bold text-gray-700 mb-2">Kategori Masukan <span class="text-yogyaRed">*</span></label>
                     <div class="grid grid-cols-2 gap-3">
@@ -168,14 +170,10 @@
                         </label>
                     </div>
                 </div>
-
-                <!-- Input Pesan -->
                 <div>
                     <label class="block text-sm font-bold text-gray-700 mb-1">Detail Cerita Anda <span class="text-yogyaRed">*</span></label>
                     <textarea id="pesan" rows="4" required placeholder="Ceritakan pengalaman Anda di sini..." class="w-full p-3 bg-gray-50 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-yogyaRed/50 focus:border-yogyaRed transition-all text-sm"></textarea>
                 </div>
-
-                <!-- Upload Foto -->
                 <div>
                     <label class="block text-sm font-bold text-gray-700 mb-1">Foto Bukti (Opsional)</label>
                     <div class="relative border-2 border-dashed border-gray-300 rounded-xl p-4 text-center hover:bg-gray-50 transition cursor-pointer" onclick="document.getElementById('foto').click()">
@@ -184,8 +182,6 @@
                         <p id="fileName" class="text-xs text-gray-500 font-semibold">Ketuk untuk pilih foto</p>
                     </div>
                 </div>
-
-                <!-- Input Kontak (Opsional) -->
                 <div class="bg-gray-50 p-4 rounded-xl border border-gray-100">
                     <p class="text-xs font-bold text-gray-500 mb-3 uppercase tracking-wider">Kontak (Boleh Dikosongkan)</p>
                     <div class="space-y-3">
@@ -193,14 +189,62 @@
                         <input type="tel" id="whatsapp" placeholder="No. WhatsApp" class="w-full p-3 bg-white border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-yogyaGreen/50 focus:border-yogyaGreen transition-all text-sm">
                     </div>
                 </div>
-
-                <!-- Submit Button -->
                 <button type="submit" id="btnSubmit" class="w-full bg-yogyaRed text-white font-extrabold py-4 rounded-xl shadow-lg shadow-red-200 active:scale-95 transition-all flex justify-center items-center gap-2">
                     Kirim Masukan
                     <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M14 5l7 7m0 0l-7 7m7-7H3"></path></svg>
                 </button>
             </form>
         </div>
+
+        <!-- VIEW 3: KATALOG PROMO -->
+        <div id="promoView" class="w-full view-hidden">
+            <!-- Header Promo -->
+            <div class="flex items-center mb-6">
+                <button onclick="toggleView('menuView')" class="p-2 bg-gray-100 rounded-full hover:bg-gray-200 active:scale-90 transition mr-4 text-gray-600">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M15 19l-7-7 7-7"></path></svg>
+                </button>
+                <div>
+                    <h2 class="text-xl font-extrabold text-gray-800">Katalog Promo</h2>
+                    <p class="text-xs text-gray-500 font-semibold">Penawaran terbaik minggu ini</p>
+                </div>
+            </div>
+
+            <!-- Swiper Slider Container -->
+            <div class="swiper mySwiper w-full h-[60vh] rounded-2xl shadow-sm border border-gray-200 bg-gray-100 overflow-hidden">
+                <div class="swiper-wrapper">
+                    <!-- Slide 1 (Dummy Gambar Merah) -->
+                    <div class="swiper-slide flex justify-center items-center relative bg-white">
+                        <img src="https://placehold.co/600x800/E3232A/ffffff?text=Promo+Akhir+Pekan\nDiskon+Hingga+50%25" alt="Promo 1" class="w-full h-full object-cover">
+                        <div class="absolute bottom-6 right-6 bg-white/90 backdrop-blur-sm px-3 py-1.5 rounded-lg shadow-md">
+                            <p class="font-bold text-yogyaRed text-xs">Berlaku s/d 20 Okt</p>
+                        </div>
+                    </div>
+                    <!-- Slide 2 (Dummy Gambar Kuning) -->
+                    <div class="swiper-slide flex justify-center items-center relative bg-white">
+                        <img src="https://placehold.co/600x800/FBD116/000000?text=Katalog+Supermarket\nHarga+Heran" alt="Promo 2" class="w-full h-full object-cover">
+                        <div class="absolute bottom-6 right-6 bg-white/90 backdrop-blur-sm px-3 py-1.5 rounded-lg shadow-md">
+                            <p class="font-bold text-yogyaYellow text-xs">Harga Heran</p>
+                        </div>
+                    </div>
+                    <!-- Slide 3 (Dummy Gambar Hijau) -->
+                    <div class="swiper-slide flex justify-center items-center relative bg-white">
+                        <img src="https://placehold.co/600x800/008A45/ffffff?text=Promo+Fresh\nBuah+%26+Sayur+Segar" alt="Promo 3" class="w-full h-full object-cover">
+                        <div class="absolute bottom-6 right-6 bg-white/90 backdrop-blur-sm px-3 py-1.5 rounded-lg shadow-md">
+                            <p class="font-bold text-yogyaGreen text-xs">Fresh Food</p>
+                        </div>
+                    </div>
+                </div>
+                <!-- Navigasi Titik Bawah (Pagination) -->
+                <div class="swiper-pagination mb-2"></div>
+            </div>
+            
+            <div class="text-center mt-5">
+                <p class="text-xs text-gray-500 font-bold bg-gray-100 py-2 px-4 rounded-full inline-block">
+                    👈 Geser gambar ke kiri/kanan 👉
+                </p>
+            </div>
+        </div>
+
     </main>
 
     <!-- FOOTER MODERN -->
@@ -215,14 +259,23 @@
     </footer>
 
     <!-- SCRIPT INTERAKSI -->
+    <script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
     <script>
-        // Animasi Pop-up Muncul Awal
         document.addEventListener('DOMContentLoaded', () => {
             const modalContent = document.getElementById('modalContent');
             setTimeout(() => { modalContent.classList.add('modal-enter-active'); }, 100);
+
+            // Inisialisasi Swiper untuk Katalog Promo
+            var swiper = new Swiper(".mySwiper", {
+                spaceBetween: 16, // Jarak antar gambar
+                grabCursor: true,
+                pagination: {
+                    el: ".swiper-pagination",
+                    dynamicBullets: true,
+                },
+            });
         });
 
-        // Logika Tutup Modal Welcome
         function closeModal() {
             const modal = document.getElementById('welcomeModal');
             const modalContent = document.getElementById('modalContent');
@@ -233,23 +286,21 @@
             setTimeout(() => { modal.style.display = 'none'; }, 300);
         }
 
-        // Logika Ganti Layar (Menu <-> Form)
+        // Logika Dinamis Ganti Layar (Mendukung banyak halaman)
         function toggleView(targetViewId) {
-            const menuView = document.getElementById('menuView');
-            const formView = document.getElementById('formView');
+            const views = ['menuView', 'formView', 'promoView'];
             
-            if(targetViewId === 'formView') {
-                menuView.classList.replace('view-enter', 'view-hidden');
-                formView.classList.replace('view-hidden', 'view-enter');
-            } else {
-                formView.classList.replace('view-enter', 'view-hidden');
-                menuView.classList.replace('view-hidden', 'view-enter');
-            }
-            // Scroll otomatis ke atas saat ganti layar
+            views.forEach(viewId => {
+                const el = document.getElementById(viewId);
+                if (viewId === targetViewId) {
+                    el.classList.replace('view-hidden', 'view-enter');
+                } else {
+                    el.classList.replace('view-enter', 'view-hidden');
+                }
+            });
             window.scrollTo({ top: 0, behavior: 'smooth' });
         }
 
-        // Tampilkan Nama File Foto yang Dipilih
         function previewFileName(input) {
             const fileNameText = document.getElementById('fileName');
             if (input.files && input.files[0]) {
@@ -261,30 +312,25 @@
             }
         }
 
-        // Simulasi Submit Form (Nanti dihubungkan ke Google Apps Script)
         function submitForm(event) {
             event.preventDefault();
             const btn = document.getElementById('btnSubmit');
             const originalText = btn.innerHTML;
             
-            // Ubah tombol jadi loading
             btn.innerHTML = `<svg class="animate-spin h-5 w-5 mr-3 border-t-2 border-white rounded-full" viewBox="0 0 24 24"></svg> Sedang Mengirim...`;
             btn.disabled = true;
             btn.classList.add('opacity-75');
 
-            // Simulasi proses pengiriman selama 1.5 detik
             setTimeout(() => {
                 alert('Terima kasih! Masukan Anda telah kami terima.');
                 document.getElementById('pengaduanForm').reset();
                 document.getElementById('fileName').textContent = 'Ketuk untuk pilih foto';
                 document.getElementById('fileName').classList.replace('text-yogyaRed', 'text-gray-500');
                 
-                // Kembalikan tombol
                 btn.innerHTML = originalText;
                 btn.disabled = false;
                 btn.classList.remove('opacity-75');
                 
-                // Balik ke menu utama
                 toggleView('menuView');
             }, 1500);
         }
