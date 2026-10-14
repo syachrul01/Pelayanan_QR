@@ -258,16 +258,15 @@
         </div>
     </footer>
 
-    <!-- SCRIPT INTERAKSI -->
+  <!-- SCRIPT INTERAKSI -->
     <script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
     <script>
         document.addEventListener('DOMContentLoaded', () => {
             const modalContent = document.getElementById('modalContent');
             setTimeout(() => { modalContent.classList.add('modal-enter-active'); }, 100);
 
-            // Inisialisasi Swiper untuk Katalog Promo
             var swiper = new Swiper(".mySwiper", {
-                spaceBetween: 16, // Jarak antar gambar
+                spaceBetween: 16,
                 grabCursor: true,
                 pagination: {
                     el: ".swiper-pagination",
@@ -286,10 +285,8 @@
             setTimeout(() => { modal.style.display = 'none'; }, 300);
         }
 
-        // Logika Dinamis Ganti Layar (Mendukung banyak halaman)
         function toggleView(targetViewId) {
             const views = ['menuView', 'formView', 'promoView'];
-            
             views.forEach(viewId => {
                 const el = document.getElementById(viewId);
                 if (viewId === targetViewId) {
@@ -312,7 +309,23 @@
             }
         }
 
-        function submitForm(event) {
+        // ==========================================
+        // KODE BARU UNTUK BACKEND GOOGLE SHEETS
+        // ==========================================
+
+        function getBase64(file) {
+            return new Promise((resolve, reject) => {
+                const reader = new FileReader();
+                reader.readAsDataURL(file);
+                reader.onload = () => resolve(reader.result);
+                reader.onerror = error => reject(error);
+            });
+        }
+
+        // URL Web App Anda sudah saya masukkan di sini
+        const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbx0aSjDgE9Ep2n10QqDPBzz18jGGD1U0R4X9nJ4yvPTUpDnXCeN0l8TMZYVy0_CHICt/exec'; 
+
+        async function submitForm(event) {
             event.preventDefault();
             const btn = document.getElementById('btnSubmit');
             const originalText = btn.innerHTML;
@@ -321,21 +334,59 @@
             btn.disabled = true;
             btn.classList.add('opacity-75');
 
-            setTimeout(() => {
+            try {
+                let kategoriPilihan = '';
+                const radios = document.getElementsByName('kategori');
+                for (let i = 0; i < radios.length; i++) {
+                    if (radios[i].checked) { kategoriPilihan = radios[i].value; break; }
+                }
+
+                const fileInput = document.getElementById('foto').files[0];
+                let imageBase64 = '';
+                let filename = '';
+
+                if (fileInput) {
+                    if (fileInput.size > 2000000) {
+                        alert('Ukuran foto terlalu besar. Maksimal 2MB.');
+                        btn.innerHTML = originalText;
+                        btn.disabled = false;
+                        return;
+                    }
+                    imageBase64 = await getBase64(fileInput);
+                    filename = fileInput.name;
+                }
+
+                const payload = {
+                    kategori: kategoriPilihan,
+                    pesan: document.getElementById('pesan').value,
+                    nama: document.getElementById('nama').value,
+                    whatsapp: document.getElementById('whatsapp').value,
+                    image: imageBase64,
+                    filename: filename
+                };
+
+                await fetch(SCRIPT_URL, {
+                    method: 'POST',
+                    mode: 'no-cors',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload)
+                });
+
                 alert('Terima kasih! Masukan Anda telah kami terima.');
                 document.getElementById('pengaduanForm').reset();
                 document.getElementById('fileName').textContent = 'Ketuk untuk pilih foto';
                 document.getElementById('fileName').classList.replace('text-yogyaRed', 'text-gray-500');
-                
+                toggleView('menuView');
+
+            } catch (error) {
+                alert('Gagal mengirim data. Pastikan internet Anda stabil.');
+                console.error(error);
+            } finally {
                 btn.innerHTML = originalText;
                 btn.disabled = false;
                 btn.classList.remove('opacity-75');
-                
-                toggleView('menuView');
-            }, 1500);
+            }
         }
-        // Ganti baris ini di index.html Anda
-const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbx0aSjDgE9Ep2n10QqDPBzz18jGGD1U0R4X9nJ4yvPTUpDnXCeN0l8TMZYVy0_CHICt/exec';
     </script>
 </body>
 </html>
