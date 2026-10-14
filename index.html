@@ -5,20 +5,16 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Layanan Pelanggan Yogya Garut</title>
     
-    <!-- Menggunakan Font 'Nunito' agar terlihat modern dan ramah -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
     
     <script src="https://cdn.tailwindcss.com"></script>
     <script>
-        // Menginjeksi warna dari Logo Yogya Group ke dalam sistem Tailwind
         tailwind.config = {
             theme: {
                 extend: {
-                    fontFamily: {
-                        sans: ['Nunito', 'sans-serif'],
-                    },
+                    fontFamily: { sans: ['Nunito', 'sans-serif'] },
                     colors: {
                         yogyaRed: '#E3232A',
                         yogyaGreen: '#008A45',
@@ -30,31 +26,34 @@
         }
     </script>
     <style>
-        /* Animasi masuk modal yang lebih mulus (Glassmorphism) */
-        .modal-enter {
-            opacity: 0;
-            transform: translateY(20px) scale(0.95);
-        }
-        .modal-enter-active {
-            opacity: 1;
-            transform: translateY(0) scale(1);
-            transition: opacity 400ms ease-out, transform 400ms ease-out;
-        }
+        .modal-enter { opacity: 0; transform: translateY(20px) scale(0.95); }
+        .modal-enter-active { opacity: 1; transform: translateY(0) scale(1); transition: opacity 400ms ease-out, transform 400ms ease-out; }
+        ::-webkit-scrollbar { display: none; }
         
-        /* Menyembunyikan scrollbar tapi tetap bisa scroll */
-        ::-webkit-scrollbar {
-            display: none;
+        /* Animasi transisi antar halaman menu dan form */
+        .view-hidden { display: none; }
+        .view-enter { animation: fadeSlideUp 0.4s ease forwards; }
+        
+        @keyframes fadeSlideUp {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* Styling custom untuk radio button kategori agar terlihat seperti tombol biasa */
+        .category-radio:checked + div {
+            border-color: #E3232A;
+            background-color: #fef2f2;
+            color: #E3232A;
         }
     </style>
 </head>
-<!-- Menggunakan max-w-md mx-auto agar di layar laptop pun tampilannya seperti layar HP (Mobile-First) -->
 <body class="bg-gray-50 min-h-screen flex flex-col font-sans relative overflow-x-hidden text-gray-800 max-w-md mx-auto shadow-2xl bg-white">
 
     <!-- MODAL POP-UP (WELCOME SCREEN) -->
-    <div id="welcomeModal" class="fixed inset-0 bg-gray-900/40 backdrop-blur-sm flex items-center justify-center z-50 transition-opacity duration-300 max-w-md mx-auto">
+    <div id="welcomeModal" class="fixed inset-0 bg-gray-900/40 backdrop-blur-sm flex items-center justify-center z-50 max-w-md mx-auto transition-opacity duration-300">
         <div id="modalContent" class="bg-white p-8 rounded-[2rem] text-center w-[85%] shadow-2xl modal-enter border border-gray-100">
             <div class="bg-gray-50 w-24 h-24 rounded-full flex items-center justify-center mx-auto mb-5 shadow-inner">
-                <img src="assets/logo_yogya_garut.png" alt="Yogya Garut" class="w-20">
+                <img src="logo_yogya_garut.png" alt="Yogya Garut" class="w-20">
             </div>
             <h2 class="text-2xl font-extrabold text-gray-800 mb-2">Halo, Selamat Datang!</h2>
             <p class="text-gray-500 mb-8 font-medium leading-relaxed">Senang melihat Anda di<br><span class="text-yogyaRed font-bold">Yogya Garut</span>. Ada yang bisa kami bantu hari ini?</p>
@@ -67,21 +66,22 @@
     <!-- MAIN CONTENT AREA -->
     <main class="flex-grow flex flex-col pt-12 px-6 relative z-10 w-full">
         
-        <!-- Header Logo & Sambutan -->
-        <div class="text-center mb-10">
-            <img src="assets/logo_yogya_garut.png" alt="Logo Yogya Garut" class="w-48 mx-auto mb-6 drop-shadow-sm">
-            <h1 class="text-2xl font-extrabold text-gray-800 mb-1">Pusat Layanan</h1>
-            <p class="text-sm text-gray-500 font-semibold">Pilih menu untuk melanjutkan</p>
+        <!-- Header Logo -->
+        <div class="text-center mb-8">
+            <img src="logo_yogya_garut.png" alt="Logo Yogya Garut" class="w-48 mx-auto mb-4 drop-shadow-sm">
         </div>
 
-        <!-- Container Tombol Menu (Berwarna & Interaktif) -->
-        <div class="w-full space-y-4">
-            
-            <!-- Tombol 1: Promo (Kuning/Oranye) -->
+        <!-- VIEW 1: MENU UTAMA -->
+        <div id="menuView" class="w-full space-y-4 view-enter">
+            <div class="text-center mb-6">
+                <h1 class="text-2xl font-extrabold text-gray-800 mb-1">Pusat Layanan</h1>
+                <p class="text-sm text-gray-500 font-semibold">Pilih menu untuk melanjutkan</p>
+            </div>
+
+            <!-- Tombol Promo -->
             <button class="group w-full bg-gradient-to-br from-yogyaOrange to-yogyaYellow text-white p-1 rounded-3xl shadow-lg shadow-orange-200 active:scale-[0.98] transition-all">
                 <div class="bg-white/20 backdrop-blur-sm rounded-full flex items-center justify-between p-4 px-6 h-full">
                     <div class="flex items-center gap-4">
-                        <!-- Icon Shopping Bag -->
                         <div class="bg-white text-yogyaOrange p-2 rounded-2xl shadow-sm">
                             <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z"></path></svg>
                         </div>
@@ -91,11 +91,10 @@
                 </div>
             </button>
             
-            <!-- Tombol 2: Keluhan dan Saran (Merah) -->
-            <button class="group w-full bg-gradient-to-br from-yogyaRed to-red-400 text-white p-1 rounded-3xl shadow-lg shadow-red-200 active:scale-[0.98] transition-all">
+            <!-- Tombol Keluhan dan Saran (Trigger ganti view) -->
+            <button onclick="toggleView('formView')" class="group w-full bg-gradient-to-br from-yogyaRed to-red-400 text-white p-1 rounded-3xl shadow-lg shadow-red-200 active:scale-[0.98] transition-all">
                 <div class="bg-white/20 backdrop-blur-sm rounded-full flex items-center justify-between p-4 px-6 h-full">
                     <div class="flex items-center gap-4">
-                        <!-- Icon Message/Feedback -->
                         <div class="bg-white text-yogyaRed p-2 rounded-2xl shadow-sm">
                             <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z"></path></svg>
                         </div>
@@ -105,11 +104,10 @@
                 </div>
             </button>
             
-            <!-- Tombol 3: Digital Map (Hijau) -->
+            <!-- Tombol Digital Map -->
             <button class="group w-full bg-gradient-to-br from-yogyaGreen to-emerald-400 text-white p-1 rounded-3xl shadow-lg shadow-green-200 active:scale-[0.98] transition-all">
                 <div class="bg-white/20 backdrop-blur-sm rounded-full flex items-center justify-between p-4 px-6 h-full">
                     <div class="flex items-center gap-4">
-                        <!-- Icon Map -->
                         <div class="bg-white text-yogyaGreen p-2 rounded-2xl shadow-sm">
                             <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 20l-5.447-2.724A1 1 0 013 16.382V5.618a1 1 0 011.447-.894L9 7m0 13l6-3m-6 3V7m6 10l4.553 2.276A1 1 0 0021 18.382V7.618a1 1 0 00-.553-.894L15 4m0 13V4m0 0L9 7"></path></svg>
                         </div>
@@ -118,17 +116,98 @@
                     <svg class="w-6 h-6 opacity-70 group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M9 5l7 7-7 7"></path></svg>
                 </div>
             </button>
+        </div>
 
+        <!-- VIEW 2: FORMULIR KELUHAN & SARAN -->
+        <div id="formView" class="w-full view-hidden">
+            <!-- Header Form & Tombol Kembali -->
+            <div class="flex items-center mb-6">
+                <button onclick="toggleView('menuView')" class="p-2 bg-gray-100 rounded-full hover:bg-gray-200 active:scale-90 transition mr-4 text-gray-600">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M15 19l-7-7 7-7"></path></svg>
+                </button>
+                <div>
+                    <h2 class="text-xl font-extrabold text-gray-800">Sampaikan Masukan</h2>
+                    <p class="text-xs text-gray-500 font-semibold">Suara Anda sangat berarti bagi kami</p>
+                </div>
+            </div>
+
+            <!-- Form -->
+            <form id="pengaduanForm" class="space-y-5" onsubmit="submitForm(event)">
+                
+                <!-- Kategori Pilihan (Grid Radio Buttons) -->
+                <div>
+                    <label class="block text-sm font-bold text-gray-700 mb-2">Kategori Masukan <span class="text-yogyaRed">*</span></label>
+                    <div class="grid grid-cols-2 gap-3">
+                        <label class="cursor-pointer">
+                            <input type="radio" name="kategori" value="Pelayanan" class="category-radio hidden" required>
+                            <div class="border-2 border-gray-200 rounded-xl p-3 text-center transition hover:border-red-200">
+                                <span class="text-2xl block mb-1">🗣️</span>
+                                <span class="text-xs font-bold text-gray-600">Pelayanan</span>
+                            </div>
+                        </label>
+                        <label class="cursor-pointer">
+                            <input type="radio" name="kategori" value="Kebersihan" class="category-radio hidden">
+                            <div class="border-2 border-gray-200 rounded-xl p-3 text-center transition hover:border-red-200">
+                                <span class="text-2xl block mb-1">🧹</span>
+                                <span class="text-xs font-bold text-gray-600">Kebersihan</span>
+                            </div>
+                        </label>
+                        <label class="cursor-pointer">
+                            <input type="radio" name="kategori" value="Produk" class="category-radio hidden">
+                            <div class="border-2 border-gray-200 rounded-xl p-3 text-center transition hover:border-red-200">
+                                <span class="text-2xl block mb-1">📦</span>
+                                <span class="text-xs font-bold text-gray-600">Stok/Produk</span>
+                            </div>
+                        </label>
+                        <label class="cursor-pointer">
+                            <input type="radio" name="kategori" value="Saran" class="category-radio hidden">
+                            <div class="border-2 border-gray-200 rounded-xl p-3 text-center transition hover:border-red-200">
+                                <span class="text-2xl block mb-1">💡</span>
+                                <span class="text-xs font-bold text-gray-600">Saran Ide</span>
+                            </div>
+                        </label>
+                    </div>
+                </div>
+
+                <!-- Input Pesan -->
+                <div>
+                    <label class="block text-sm font-bold text-gray-700 mb-1">Detail Cerita Anda <span class="text-yogyaRed">*</span></label>
+                    <textarea id="pesan" rows="4" required placeholder="Ceritakan pengalaman Anda di sini..." class="w-full p-3 bg-gray-50 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-yogyaRed/50 focus:border-yogyaRed transition-all text-sm"></textarea>
+                </div>
+
+                <!-- Upload Foto -->
+                <div>
+                    <label class="block text-sm font-bold text-gray-700 mb-1">Foto Bukti (Opsional)</label>
+                    <div class="relative border-2 border-dashed border-gray-300 rounded-xl p-4 text-center hover:bg-gray-50 transition cursor-pointer" onclick="document.getElementById('foto').click()">
+                        <input type="file" id="foto" accept="image/*" class="hidden" onchange="previewFileName(this)">
+                        <svg class="mx-auto h-8 w-8 text-gray-400 mb-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg>
+                        <p id="fileName" class="text-xs text-gray-500 font-semibold">Ketuk untuk pilih foto</p>
+                    </div>
+                </div>
+
+                <!-- Input Kontak (Opsional) -->
+                <div class="bg-gray-50 p-4 rounded-xl border border-gray-100">
+                    <p class="text-xs font-bold text-gray-500 mb-3 uppercase tracking-wider">Kontak (Boleh Dikosongkan)</p>
+                    <div class="space-y-3">
+                        <input type="text" id="nama" placeholder="Nama Anda" class="w-full p-3 bg-white border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-yogyaGreen/50 focus:border-yogyaGreen transition-all text-sm">
+                        <input type="tel" id="whatsapp" placeholder="No. WhatsApp" class="w-full p-3 bg-white border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-yogyaGreen/50 focus:border-yogyaGreen transition-all text-sm">
+                    </div>
+                </div>
+
+                <!-- Submit Button -->
+                <button type="submit" id="btnSubmit" class="w-full bg-yogyaRed text-white font-extrabold py-4 rounded-xl shadow-lg shadow-red-200 active:scale-95 transition-all flex justify-center items-center gap-2">
+                    Kirim Masukan
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M14 5l7 7m0 0l-7 7m7-7H3"></path></svg>
+                </button>
+            </form>
         </div>
     </main>
 
-    <!-- FOOTER MODERN DENGAN SVG WAVE (GELOMBANG HIJAU) -->
-    <footer class="mt-12 w-full flex-shrink-0 relative">
-        <!-- SVG Gelombang -->
+    <!-- FOOTER MODERN -->
+    <footer class="mt-8 w-full flex-shrink-0 relative">
         <svg viewBox="0 0 1440 320" class="w-full h-auto -mb-1 block">
             <path fill="#008A45" fill-opacity="1" d="M0,128L48,144C96,160,192,192,288,197.3C384,203,480,181,576,160C672,139,768,117,864,122.7C960,128,1056,160,1152,165.3C1248,171,1344,149,1392,138.7L1440,128L1440,320L1392,320C1344,320,1248,320,1152,320C1056,320,960,320,864,320C768,320,672,320,576,320C480,320,384,320,288,320C192,320,96,320,48,320L0,320Z"></path>
         </svg>
-        <!-- Area solid di bawah gelombang -->
         <div class="bg-yogyaGreen w-full pb-8 pt-2 flex flex-col items-center justify-center text-center">
             <p class="text-white/90 font-bold tracking-wide text-sm mb-1">YOGYA GROUP GARUT</p>
             <p class="text-white/60 text-xs">Melayani dengan senyum & sepenuh hati</p>
@@ -137,27 +216,77 @@
 
     <!-- SCRIPT INTERAKSI -->
     <script>
-        // Animasi Pop-up Muncul
+        // Animasi Pop-up Muncul Awal
         document.addEventListener('DOMContentLoaded', () => {
             const modalContent = document.getElementById('modalContent');
-            setTimeout(() => {
-                modalContent.classList.add('modal-enter-active');
-            }, 100); // Sedikit jeda agar browser merender halaman dulu
+            setTimeout(() => { modalContent.classList.add('modal-enter-active'); }, 100);
         });
 
-        // Logika Tutup Modal
+        // Logika Tutup Modal Welcome
         function closeModal() {
             const modal = document.getElementById('welcomeModal');
             const modalContent = document.getElementById('modalContent');
-            
             modalContent.style.transform = 'translateY(-20px) scale(0.95)';
             modalContent.style.opacity = '0';
             modal.style.transition = 'opacity 300ms ease-in';
             modal.style.opacity = '0';
+            setTimeout(() => { modal.style.display = 'none'; }, 300);
+        }
+
+        // Logika Ganti Layar (Menu <-> Form)
+        function toggleView(targetViewId) {
+            const menuView = document.getElementById('menuView');
+            const formView = document.getElementById('formView');
             
+            if(targetViewId === 'formView') {
+                menuView.classList.replace('view-enter', 'view-hidden');
+                formView.classList.replace('view-hidden', 'view-enter');
+            } else {
+                formView.classList.replace('view-enter', 'view-hidden');
+                menuView.classList.replace('view-hidden', 'view-enter');
+            }
+            // Scroll otomatis ke atas saat ganti layar
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        // Tampilkan Nama File Foto yang Dipilih
+        function previewFileName(input) {
+            const fileNameText = document.getElementById('fileName');
+            if (input.files && input.files[0]) {
+                fileNameText.textContent = input.files[0].name;
+                fileNameText.classList.replace('text-gray-500', 'text-yogyaRed');
+            } else {
+                fileNameText.textContent = 'Ketuk untuk pilih foto';
+                fileNameText.classList.replace('text-yogyaRed', 'text-gray-500');
+            }
+        }
+
+        // Simulasi Submit Form (Nanti dihubungkan ke Google Apps Script)
+        function submitForm(event) {
+            event.preventDefault();
+            const btn = document.getElementById('btnSubmit');
+            const originalText = btn.innerHTML;
+            
+            // Ubah tombol jadi loading
+            btn.innerHTML = `<svg class="animate-spin h-5 w-5 mr-3 border-t-2 border-white rounded-full" viewBox="0 0 24 24"></svg> Sedang Mengirim...`;
+            btn.disabled = true;
+            btn.classList.add('opacity-75');
+
+            // Simulasi proses pengiriman selama 1.5 detik
             setTimeout(() => {
-                modal.style.display = 'none';
-            }, 300);
+                alert('Terima kasih! Masukan Anda telah kami terima.');
+                document.getElementById('pengaduanForm').reset();
+                document.getElementById('fileName').textContent = 'Ketuk untuk pilih foto';
+                document.getElementById('fileName').classList.replace('text-yogyaRed', 'text-gray-500');
+                
+                // Kembalikan tombol
+                btn.innerHTML = originalText;
+                btn.disabled = false;
+                btn.classList.remove('opacity-75');
+                
+                // Balik ke menu utama
+                toggleView('menuView');
+            }, 1500);
         }
     </script>
 </body>
