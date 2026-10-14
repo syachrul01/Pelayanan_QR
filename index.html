@@ -8,22 +8,14 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
-    
-    <!-- Swiper CSS untuk fitur geser (carousel) -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css" />
-    
     <script src="https://cdn.tailwindcss.com"></script>
     <script>
         tailwind.config = {
             theme: {
                 extend: {
                     fontFamily: { sans: ['Nunito', 'sans-serif'] },
-                    colors: {
-                        yogyaRed: '#E3232A',
-                        yogyaGreen: '#008A45',
-                        yogyaYellow: '#FBD116',
-                        yogyaOrange: '#F47920'
-                    }
+                    colors: { yogyaRed: '#E3232A', yogyaGreen: '#008A45', yogyaYellow: '#FBD116', yogyaOrange: '#F47920' }
                 }
             }
         }
@@ -32,25 +24,11 @@
         .modal-enter { opacity: 0; transform: translateY(20px) scale(0.95); }
         .modal-enter-active { opacity: 1; transform: translateY(0) scale(1); transition: opacity 400ms ease-out, transform 400ms ease-out; }
         ::-webkit-scrollbar { display: none; }
-        
         .view-hidden { display: none; }
         .view-enter { animation: fadeSlideUp 0.4s ease forwards; }
-        
-        @keyframes fadeSlideUp {
-            from { opacity: 0; transform: translateY(20px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-
-        .category-radio:checked + div {
-            border-color: #E3232A;
-            background-color: #fef2f2;
-            color: #E3232A;
-        }
-
-        /* Customisasi Swiper Pagination (Titik-titik indikator) */
-        .swiper-pagination-bullet-active {
-            background-color: #E3232A !important;
-        }
+        @keyframes fadeSlideUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+        .category-radio:checked + div { border-color: #E3232A; background-color: #fef2f2; color: #E3232A; }
+        .swiper-pagination-bullet-active { background-color: #E3232A !important; }
     </style>
 </head>
 <body class="bg-gray-50 min-h-screen flex flex-col font-sans relative overflow-x-hidden text-gray-800 max-w-md mx-auto shadow-2xl bg-white">
@@ -71,8 +49,6 @@
 
     <!-- MAIN CONTENT AREA -->
     <main class="flex-grow flex flex-col pt-12 px-6 relative z-10 w-full">
-        
-        <!-- Header Logo -->
         <div class="text-center mb-8">
             <img src="assets/logo_yogya_garut.png" alt="Logo Yogya Garut" class="w-48 mx-auto mb-4 drop-shadow-sm">
         </div>
@@ -83,40 +59,28 @@
                 <h1 class="text-2xl font-extrabold text-gray-800 mb-1">Pusat Layanan</h1>
                 <p class="text-sm text-gray-500 font-semibold">Pilih menu untuk melanjutkan</p>
             </div>
-
-            <!-- Tombol Promo (Sekarang memanggil view promoView) -->
-            <button onclick="toggleView('promoView')" class="group w-full bg-gradient-to-br from-yogyaOrange to-yogyaYellow text-white p-1 rounded-3xl shadow-lg shadow-orange-200 active:scale-[0.98] transition-all">
+            <button onclick="toggleView('promoView')" class="group w-full bg-gradient-to-br from-yogyaOrange to-yogyaYellow text-white p-1 rounded-3xl shadow-lg active:scale-[0.98] transition-all">
                 <div class="bg-white/20 backdrop-blur-sm rounded-full flex items-center justify-between p-4 px-6 h-full">
                     <div class="flex items-center gap-4">
-                        <div class="bg-white text-yogyaOrange p-2 rounded-2xl shadow-sm">
-                            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z"></path></svg>
-                        </div>
+                        <div class="bg-white text-yogyaOrange p-2 rounded-2xl shadow-sm"><svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z"></path></svg></div>
                         <span class="font-bold text-lg text-white drop-shadow-sm">Katalog Promo</span>
                     </div>
                     <svg class="w-6 h-6 opacity-70 group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M9 5l7 7-7 7"></path></svg>
                 </div>
             </button>
-            
-            <!-- Tombol Keluhan dan Saran -->
-            <button onclick="toggleView('formView')" class="group w-full bg-gradient-to-br from-yogyaRed to-red-400 text-white p-1 rounded-3xl shadow-lg shadow-red-200 active:scale-[0.98] transition-all">
+            <button onclick="toggleView('formView')" class="group w-full bg-gradient-to-br from-yogyaRed to-red-400 text-white p-1 rounded-3xl shadow-lg active:scale-[0.98] transition-all">
                 <div class="bg-white/20 backdrop-blur-sm rounded-full flex items-center justify-between p-4 px-6 h-full">
                     <div class="flex items-center gap-4">
-                        <div class="bg-white text-yogyaRed p-2 rounded-2xl shadow-sm">
-                            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z"></path></svg>
-                        </div>
+                        <div class="bg-white text-yogyaRed p-2 rounded-2xl shadow-sm"><svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z"></path></svg></div>
                         <span class="font-bold text-lg text-white drop-shadow-sm">Keluhan & Saran</span>
                     </div>
                     <svg class="w-6 h-6 opacity-70 group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M9 5l7 7-7 7"></path></svg>
                 </div>
             </button>
-            
-            <!-- Tombol Digital Map -->
-            <button class="group w-full bg-gradient-to-br from-yogyaGreen to-emerald-400 text-white p-1 rounded-3xl shadow-lg shadow-green-200 active:scale-[0.98] transition-all">
+            <button class="group w-full bg-gradient-to-br from-yogyaGreen to-emerald-400 text-white p-1 rounded-3xl shadow-lg active:scale-[0.98] transition-all">
                 <div class="bg-white/20 backdrop-blur-sm rounded-full flex items-center justify-between p-4 px-6 h-full">
                     <div class="flex items-center gap-4">
-                        <div class="bg-white text-yogyaGreen p-2 rounded-2xl shadow-sm">
-                            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 20l-5.447-2.724A1 1 0 013 16.382V5.618a1 1 0 011.447-.894L9 7m0 13l6-3m-6 3V7m6 10l4.553 2.276A1 1 0 0021 18.382V7.618a1 1 0 00-.553-.894L15 4m0 13V4m0 0L9 7"></path></svg>
-                        </div>
+                        <div class="bg-white text-yogyaGreen p-2 rounded-2xl shadow-sm"><svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 20l-5.447-2.724A1 1 0 013 16.382V5.618a1 1 0 011.447-.894L9 7m0 13l6-3m-6 3V7m6 10l4.553 2.276A1 1 0 0021 18.382V7.618a1 1 0 00-.553-.894L15 4m0 13V4m0 0L9 7"></path></svg></div>
                         <span class="font-bold text-lg text-white drop-shadow-sm">Digital Map</span>
                     </div>
                     <svg class="w-6 h-6 opacity-70 group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M9 5l7 7-7 7"></path></svg>
@@ -135,46 +99,60 @@
                     <p class="text-xs text-gray-500 font-semibold">Suara Anda sangat berarti bagi kami</p>
                 </div>
             </div>
-            <!-- (Isi form sama persis dengan sebelumnya) -->
+            
             <form id="pengaduanForm" class="space-y-5" onsubmit="submitForm(event)">
-                <div>
+                
+                <!-- 1. IDENTITAS WAJIB (Dipindah ke atas) -->
+                <div class="space-y-4">
+                    <div>
+                        <label class="block text-sm font-bold text-gray-700 mb-1">Nama Anda <span class="text-yogyaRed">*</span></label>
+                        <input type="text" id="nama" required placeholder="Masukkan nama Anda..." class="w-full p-3 bg-gray-50 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-yogyaRed/50 focus:border-yogyaRed transition-all text-sm">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-bold text-gray-700 mb-1">No. WhatsApp <span class="text-yogyaRed">*</span></label>
+                        <input type="tel" id="whatsapp" required placeholder="Contoh: 08123456789" class="w-full p-3 bg-gray-50 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-yogyaRed/50 focus:border-yogyaRed transition-all text-sm">
+                    </div>
+                </div>
+
+                <!-- 2. KATEGORI (Wajib) -->
+                <div class="pt-2 border-t border-gray-100">
                     <label class="block text-sm font-bold text-gray-700 mb-2">Kategori Masukan <span class="text-yogyaRed">*</span></label>
                     <div class="grid grid-cols-2 gap-3">
                         <label class="cursor-pointer">
                             <input type="radio" name="kategori" value="Pelayanan" class="category-radio hidden" required>
                             <div class="border-2 border-gray-200 rounded-xl p-3 text-center transition hover:border-red-200">
-                                <span class="text-2xl block mb-1">🗣️</span>
-                                <span class="text-xs font-bold text-gray-600">Pelayanan</span>
+                                <span class="text-2xl block mb-1">🗣️</span><span class="text-xs font-bold text-gray-600">Pelayanan</span>
                             </div>
                         </label>
                         <label class="cursor-pointer">
                             <input type="radio" name="kategori" value="Kebersihan" class="category-radio hidden">
                             <div class="border-2 border-gray-200 rounded-xl p-3 text-center transition hover:border-red-200">
-                                <span class="text-2xl block mb-1">🧹</span>
-                                <span class="text-xs font-bold text-gray-600">Kebersihan</span>
+                                <span class="text-2xl block mb-1">🧹</span><span class="text-xs font-bold text-gray-600">Kebersihan</span>
                             </div>
                         </label>
                         <label class="cursor-pointer">
                             <input type="radio" name="kategori" value="Produk" class="category-radio hidden">
                             <div class="border-2 border-gray-200 rounded-xl p-3 text-center transition hover:border-red-200">
-                                <span class="text-2xl block mb-1">📦</span>
-                                <span class="text-xs font-bold text-gray-600">Stok/Produk</span>
+                                <span class="text-2xl block mb-1">📦</span><span class="text-xs font-bold text-gray-600">Stok/Produk</span>
                             </div>
                         </label>
                         <label class="cursor-pointer">
                             <input type="radio" name="kategori" value="Saran" class="category-radio hidden">
                             <div class="border-2 border-gray-200 rounded-xl p-3 text-center transition hover:border-red-200">
-                                <span class="text-2xl block mb-1">💡</span>
-                                <span class="text-xs font-bold text-gray-600">Saran Ide</span>
+                                <span class="text-2xl block mb-1">💡</span><span class="text-xs font-bold text-gray-600">Saran Ide</span>
                             </div>
                         </label>
                     </div>
                 </div>
+
+                <!-- 3. PESAN (Wajib) -->
                 <div>
                     <label class="block text-sm font-bold text-gray-700 mb-1">Detail Cerita Anda <span class="text-yogyaRed">*</span></label>
                     <textarea id="pesan" rows="4" required placeholder="Ceritakan pengalaman Anda di sini..." class="w-full p-3 bg-gray-50 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-yogyaRed/50 focus:border-yogyaRed transition-all text-sm"></textarea>
                 </div>
-                <div>
+
+                <!-- 4. FOTO (Opsional) -->
+                <div class="pb-4">
                     <label class="block text-sm font-bold text-gray-700 mb-1">Foto Bukti (Opsional)</label>
                     <div class="relative border-2 border-dashed border-gray-300 rounded-xl p-4 text-center hover:bg-gray-50 transition cursor-pointer" onclick="document.getElementById('foto').click()">
                         <input type="file" id="foto" accept="image/*" class="hidden" onchange="previewFileName(this)">
@@ -182,13 +160,7 @@
                         <p id="fileName" class="text-xs text-gray-500 font-semibold">Ketuk untuk pilih foto</p>
                     </div>
                 </div>
-                <div class="bg-gray-50 p-4 rounded-xl border border-gray-100">
-                    <p class="text-xs font-bold text-gray-500 mb-3 uppercase tracking-wider">Kontak (Boleh Dikosongkan)</p>
-                    <div class="space-y-3">
-                        <input type="text" id="nama" placeholder="Nama Anda" class="w-full p-3 bg-white border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-yogyaGreen/50 focus:border-yogyaGreen transition-all text-sm">
-                        <input type="tel" id="whatsapp" placeholder="No. WhatsApp" class="w-full p-3 bg-white border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-yogyaGreen/50 focus:border-yogyaGreen transition-all text-sm">
-                    </div>
-                </div>
+
                 <button type="submit" id="btnSubmit" class="w-full bg-yogyaRed text-white font-extrabold py-4 rounded-xl shadow-lg shadow-red-200 active:scale-95 transition-all flex justify-center items-center gap-2">
                     Kirim Masukan
                     <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M14 5l7 7m0 0l-7 7m7-7H3"></path></svg>
@@ -198,81 +170,58 @@
 
         <!-- VIEW 3: KATALOG PROMO -->
         <div id="promoView" class="w-full view-hidden">
-            <!-- Header Promo -->
             <div class="flex items-center mb-6">
-                <button onclick="toggleView('menuView')" class="p-2 bg-gray-100 rounded-full hover:bg-gray-200 active:scale-90 transition mr-4 text-gray-600">
-                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M15 19l-7-7 7-7"></path></svg>
-                </button>
+                <button onclick="toggleView('menuView')" class="p-2 bg-gray-100 rounded-full hover:bg-gray-200 active:scale-90 transition mr-4 text-gray-600"><svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M15 19l-7-7 7-7"></path></svg></button>
                 <div>
                     <h2 class="text-xl font-extrabold text-gray-800">Katalog Promo</h2>
                     <p class="text-xs text-gray-500 font-semibold">Penawaran terbaik minggu ini</p>
                 </div>
             </div>
-
-            <!-- Swiper Slider Container -->
             <div class="swiper mySwiper w-full h-[60vh] rounded-2xl shadow-sm border border-gray-200 bg-gray-100 overflow-hidden">
                 <div class="swiper-wrapper">
-                    <!-- Slide 1 (Dummy Gambar Merah) -->
-                    <div class="swiper-slide flex justify-center items-center relative bg-white">
-                        <img src="https://placehold.co/600x800/E3232A/ffffff?text=Promo+Akhir+Pekan\nDiskon+Hingga+50%25" alt="Promo 1" class="w-full h-full object-cover">
-                        <div class="absolute bottom-6 right-6 bg-white/90 backdrop-blur-sm px-3 py-1.5 rounded-lg shadow-md">
-                            <p class="font-bold text-yogyaRed text-xs">Berlaku s/d 20 Okt</p>
-                        </div>
-                    </div>
-                    <!-- Slide 2 (Dummy Gambar Kuning) -->
-                    <div class="swiper-slide flex justify-center items-center relative bg-white">
-                        <img src="https://placehold.co/600x800/FBD116/000000?text=Katalog+Supermarket\nHarga+Heran" alt="Promo 2" class="w-full h-full object-cover">
-                        <div class="absolute bottom-6 right-6 bg-white/90 backdrop-blur-sm px-3 py-1.5 rounded-lg shadow-md">
-                            <p class="font-bold text-yogyaYellow text-xs">Harga Heran</p>
-                        </div>
-                    </div>
-                    <!-- Slide 3 (Dummy Gambar Hijau) -->
-                    <div class="swiper-slide flex justify-center items-center relative bg-white">
-                        <img src="https://placehold.co/600x800/008A45/ffffff?text=Promo+Fresh\nBuah+%26+Sayur+Segar" alt="Promo 3" class="w-full h-full object-cover">
-                        <div class="absolute bottom-6 right-6 bg-white/90 backdrop-blur-sm px-3 py-1.5 rounded-lg shadow-md">
-                            <p class="font-bold text-yogyaGreen text-xs">Fresh Food</p>
-                        </div>
-                    </div>
+                    <div class="swiper-slide flex justify-center items-center relative bg-white"><img src="https://placehold.co/600x800/E3232A/ffffff?text=Promo+Akhir+Pekan\nDiskon+Hingga+50%25" class="w-full h-full object-cover"></div>
+                    <div class="swiper-slide flex justify-center items-center relative bg-white"><img src="https://placehold.co/600x800/FBD116/000000?text=Katalog+Supermarket\nHarga+Heran" class="w-full h-full object-cover"></div>
+                    <div class="swiper-slide flex justify-center items-center relative bg-white"><img src="https://placehold.co/600x800/008A45/ffffff?text=Promo+Fresh\nBuah+%26+Sayur+Segar" class="w-full h-full object-cover"></div>
                 </div>
-                <!-- Navigasi Titik Bawah (Pagination) -->
                 <div class="swiper-pagination mb-2"></div>
             </div>
-            
-            <div class="text-center mt-5">
-                <p class="text-xs text-gray-500 font-bold bg-gray-100 py-2 px-4 rounded-full inline-block">
-                    👈 Geser gambar ke kiri/kanan 👉
-                </p>
-            </div>
+            <div class="text-center mt-5"><p class="text-xs text-gray-500 font-bold bg-gray-100 py-2 px-4 rounded-full inline-block">👈 Geser gambar ke kiri/kanan 👉</p></div>
         </div>
-
     </main>
 
-    <!-- FOOTER MODERN -->
+    <!-- FOOTER -->
     <footer class="mt-8 w-full flex-shrink-0 relative">
-        <svg viewBox="0 0 1440 320" class="w-full h-auto -mb-1 block">
-            <path fill="#008A45" fill-opacity="1" d="M0,128L48,144C96,160,192,192,288,197.3C384,203,480,181,576,160C672,139,768,117,864,122.7C960,128,1056,160,1152,165.3C1248,171,1344,149,1392,138.7L1440,128L1440,320L1392,320C1344,320,1248,320,1152,320C1056,320,960,320,864,320C768,320,672,320,576,320C480,320,384,320,288,320C192,320,96,320,48,320L0,320Z"></path>
-        </svg>
-        <div class="bg-yogyaGreen w-full pb-8 pt-2 flex flex-col items-center justify-center text-center">
+        <svg viewBox="0 0 1440 320" class="w-full h-auto -mb-1 block"><path fill="#008A45" fill-opacity="1" d="M0,128L48,144C96,160,192,192,288,197.3C384,203,480,181,576,160C672,139,768,117,864,122.7C960,128,1056,160,1152,165.3C1248,171,1344,149,1392,138.7L1440,128L1440,320L1392,320C1344,320,1248,320,1152,320C1056,320,960,320,864,320C768,320,672,320,576,320C480,320,384,320,288,320C192,320,96,320,48,320L0,320Z"></path></svg>
+        <div class="bg-yogyaGreen w-full pb-14 pt-2 flex flex-col items-center justify-center text-center">
             <p class="text-white/90 font-bold tracking-wide text-sm mb-1">YOGYA GROUP GARUT</p>
             <p class="text-white/60 text-xs">Melayani dengan senyum & sepenuh hati</p>
         </div>
     </footer>
 
-  <!-- SCRIPT INTERAKSI -->
+    <!-- TOMBOL WHATSAPP MELAYANG -->
+    <div class="fixed bottom-6 right-6 z-40 flex flex-col items-end gap-2">
+        <!-- Tooltip animasi -->
+        <div class="bg-white text-gray-700 text-[11px] font-bold px-3 py-1.5 rounded-lg shadow-md border border-gray-100 animate-bounce">
+            Chat Admin Langsung
+        </div>
+        <!-- Tombol WA -->
+        <a href="https://wa.me/6283899029952?text=Halo%20Admin%20Yogya%20Garut,%20saya%20butuh%20bantuan." target="_blank" class="bg-[#25D366] text-white p-4 rounded-full shadow-lg shadow-green-300 hover:scale-105 active:scale-95 transition-all relative flex items-center justify-center">
+            <!-- Animasi gelombang di belakang tombol -->
+            <span class="absolute inset-0 rounded-full bg-[#25D366] animate-ping opacity-75"></span>
+            <!-- Ikon WA -->
+            <svg class="w-8 h-8 relative z-10" fill="currentColor" viewBox="0 0 24 24">
+                <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51a12.8 12.8 0 0 0-.57-.01c-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 0 1-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 0 1-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 0 1 2.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0 0 12.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 0 0 5.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 0 0-3.48-8.413Z"/>
+            </svg>
+        </a>
+    </div>
+
+    <!-- SCRIPT INTERAKSI -->
     <script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
     <script>
         document.addEventListener('DOMContentLoaded', () => {
             const modalContent = document.getElementById('modalContent');
             setTimeout(() => { modalContent.classList.add('modal-enter-active'); }, 100);
-
-            var swiper = new Swiper(".mySwiper", {
-                spaceBetween: 16,
-                grabCursor: true,
-                pagination: {
-                    el: ".swiper-pagination",
-                    dynamicBullets: true,
-                },
-            });
+            var swiper = new Swiper(".mySwiper", { spaceBetween: 16, grabCursor: true, pagination: { el: ".swiper-pagination", dynamicBullets: true } });
         });
 
         function closeModal() {
@@ -289,11 +238,8 @@
             const views = ['menuView', 'formView', 'promoView'];
             views.forEach(viewId => {
                 const el = document.getElementById(viewId);
-                if (viewId === targetViewId) {
-                    el.classList.replace('view-hidden', 'view-enter');
-                } else {
-                    el.classList.replace('view-enter', 'view-hidden');
-                }
+                if (viewId === targetViewId) el.classList.replace('view-hidden', 'view-enter');
+                else el.classList.replace('view-enter', 'view-hidden');
             });
             window.scrollTo({ top: 0, behavior: 'smooth' });
         }
@@ -309,10 +255,6 @@
             }
         }
 
-        // ==========================================
-        // KODE BARU UNTUK BACKEND GOOGLE SHEETS
-        // ==========================================
-
         function getBase64(file) {
             return new Promise((resolve, reject) => {
                 const reader = new FileReader();
@@ -322,7 +264,7 @@
             });
         }
 
-        // URL Web App Anda sudah saya masukkan di sini
+        // PASTIKAN URL WEB APP ANDA TETAP SAMA
         const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbx0aSjDgE9Ep2n10QqDPBzz18jGGD1U0R4X9nJ4yvPTUpDnXCeN0l8TMZYVy0_CHICt/exec'; 
 
         async function submitForm(event) {
@@ -362,7 +304,8 @@
                     nama: document.getElementById('nama').value,
                     whatsapp: document.getElementById('whatsapp').value,
                     image: imageBase64,
-                    filename: filename
+                    filename: filename,
+                    action: 'create'
                 };
 
                 await fetch(SCRIPT_URL, {
