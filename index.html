@@ -4,106 +4,52 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Layanan Pelanggan Yogya Garut</title>
+    
+    <!-- Menggunakan Font 'Nunito' agar terlihat modern dan ramah -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
+    
     <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        // Menginjeksi warna dari Logo Yogya Group ke dalam sistem Tailwind
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Nunito', 'sans-serif'],
+                    },
+                    colors: {
+                        yogyaRed: '#E3232A',
+                        yogyaGreen: '#008A45',
+                        yogyaYellow: '#FBD116',
+                        yogyaOrange: '#F47920'
+                    }
+                }
+            }
+        }
+    </script>
     <style>
-        /* Animasi untuk memunculkan modal dengan mulus */
+        /* Animasi masuk modal yang lebih mulus (Glassmorphism) */
         .modal-enter {
             opacity: 0;
-            transform: scale(0.9);
+            transform: translateY(20px) scale(0.95);
         }
         .modal-enter-active {
             opacity: 1;
-            transform: scale(1);
-            transition: opacity 300ms, transform 300ms;
+            transform: translateY(0) scale(1);
+            transition: opacity 400ms ease-out, transform 400ms ease-out;
+        }
+        
+        /* Menyembunyikan scrollbar tapi tetap bisa scroll */
+        ::-webkit-scrollbar {
+            display: none;
         }
     </style>
 </head>
-<body class="bg-white min-h-screen flex flex-col font-sans relative overflow-hidden text-gray-800">
+<!-- Menggunakan max-w-md mx-auto agar di layar laptop pun tampilannya seperti layar HP (Mobile-First) -->
+<body class="bg-gray-50 min-h-screen flex flex-col font-sans relative overflow-x-hidden text-gray-800 max-w-md mx-auto shadow-2xl bg-white">
 
-    <!-- MODAL POP-UP (MUNCUL AWAL) -->
-    <div id="welcomeModal" class="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50 transition-opacity duration-300">
-        <div id="modalContent" class="bg-white p-8 rounded-3xl text-center max-w-sm w-[85%] shadow-2xl modal-enter">
-            <!-- Gunakan logo yang sama di dalam pop-up -->
-            <img src="logo_yogya_garut.png" alt="Yogya Garut" class="w-32 mx-auto mb-5">
-            <h2 class="text-2xl font-extrabold text-gray-800 mb-2">Selamat Datang!</h2>
-            <p class="text-gray-600 mb-8 font-medium">Di Yogya Garut,<br>ada yang bisa kami bantu?</p>
-            <button onclick="closeModal()" class="bg-[#E31E24] text-white px-8 py-3 rounded-full font-bold text-lg hover:bg-red-700 w-full transition-transform active:scale-95 shadow-lg shadow-red-200">
-                Lanjutkan
-            </button>
-        </div>
-    </div>
-
-    <!-- MAIN CONTENT AREA -->
-    <!-- flex-grow memastikan area konten mendorong footer ke bawah jika layar tinggi -->
-    <main class="flex-grow flex flex-col items-center pt-10 px-6 relative z-10 w-full max-w-md mx-auto">
-        
-        <!-- Logo -->
-        <img src="logo_yogya_garut.png" alt="Logo Yogya Garut" class="w-56 mb-8">
-
-        <!-- Teks Sambutan (Disempurnakan agar lebih ramah dibaca) -->
-        <h1 class="text-center text-xl font-bold text-gray-800 mb-2 leading-snug">
-            SELAMAT DATANG DI<br>YOGYA GARUT
-        </h1>
-        <p class="text-center text-sm text-gray-500 mb-10 font-medium">
-            BERIKUT INFORMASI YANG ADA
-        </p>
-
-        <!-- Container Tombol -->
-        <div class="w-full space-y-4">
-            <!-- Tombol 1: Promo -->
-            <button class="w-full bg-white border-2 border-gray-800 text-gray-800 font-bold text-lg py-4 rounded-3xl shadow-[0_4px_0_rgba(31,41,55,1)] hover:bg-gray-50 active:translate-y-1 active:shadow-[0_0px_0_rgba(31,41,55,1)] transition-all flex justify-center items-center">
-                PROMO
-            </button>
-            
-            <!-- Tombol 2: Keluhan dan Saran -->
-            <button class="w-full bg-white border-2 border-gray-800 text-gray-800 font-bold text-lg py-4 rounded-3xl shadow-[0_4px_0_rgba(31,41,55,1)] hover:bg-gray-50 active:translate-y-1 active:shadow-[0_0px_0_rgba(31,41,55,1)] transition-all flex justify-center items-center">
-                KELUHAN DAN SARAN
-            </button>
-            
-            <!-- Tombol 3: Digital Map -->
-            <button class="w-full bg-white border-2 border-gray-800 text-gray-800 font-bold text-lg py-4 rounded-3xl shadow-[0_4px_0_rgba(31,41,55,1)] hover:bg-gray-50 active:translate-y-1 active:shadow-[0_0px_0_rgba(31,41,55,1)] transition-all flex justify-center items-center">
-                DIGITAL MAP
-            </button>
-        </div>
-    </main>
-
-    <!-- FOOTER DENGAN KURVA ORANYE -->
-    <footer class="relative mt-12 h-32 w-full overflow-hidden flex-shrink-0">
-        <!-- Bentuk elips untuk menciptakan kurva seperti sketsa -->
-        <div class="absolute bg-[#F47920] w-[150%] h-48 rounded-t-[50%] left-1/2 -translate-x-1/2 top-4"></div>
-        <!-- Konten di atas kurva -->
-        <div class="relative z-10 w-full h-full flex items-end justify-center pb-6">
-            <p class="text-white font-bold tracking-widest text-sm drop-shadow-md">FOOTER</p>
-        </div>
-    </footer>
-
-    <!-- SCRIPT UNTUK INTERAKSI -->
-    <script>
-        // Logika memunculkan modal saat halaman siap
-        document.addEventListener('DOMContentLoaded', () => {
-            const modalContent = document.getElementById('modalContent');
-            
-            // Sedikit jeda agar transisi terlihat mulus
-            setTimeout(() => {
-                modalContent.classList.add('modal-enter-active');
-            }, 50);
-        });
-
-        // Logika menutup modal pop-up
-        function closeModal() {
-            const modal = document.getElementById('welcomeModal');
-            const modalContent = document.getElementById('modalContent');
-            
-            // Animasi menghilang
-            modalContent.style.transform = 'scale(0.9)';
-            modalContent.style.opacity = '0';
-            modal.style.opacity = '0';
-            
-            // Hapus elemen dari DOM setelah animasi selesai
-            setTimeout(() => {
-                modal.style.display = 'none';
-            }, 300);
-        }
-    </script>
-</body>
-</html>
+    <!-- MODAL POP-UP (WELCOME SCREEN) -->
+    <div id="welcomeModal" class="fixed inset-0 bg-gray-900/40 backdrop-blur-sm flex items-center justify-center z-50 transition-opacity duration-300 max-w-md mx-auto">
+        <div id="modalContent
