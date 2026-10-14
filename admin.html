@@ -1,0 +1,219 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin - Layanan Yogya Garut</title>
+    <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: { sans: ['Nunito', 'sans-serif'] },
+                    colors: {
+                        yogyaRed: '#E3232A',
+                        yogyaGreen: '#008A45',
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        .hidden-view { display: none !important; }
+    </style>
+</head>
+<body class="bg-gray-100 font-sans text-gray-800 h-screen overflow-hidden flex">
+
+    <!-- LAYAR LOGIN (Dummy) -->
+    <div id="loginScreen" class="fixed inset-0 bg-gray-900 z-50 flex items-center justify-center p-4 transition-opacity">
+        <div class="bg-white rounded-2xl shadow-2xl w-full max-w-md p-8 text-center relative overflow-hidden">
+            <div class="absolute top-0 left-0 w-full h-2 bg-yogyaGreen"></div>
+            <img src="logo_yogya_garut.png" alt="Logo Yogya" class="w-32 mx-auto mb-6">
+            <h2 class="text-2xl font-bold text-gray-800 mb-2">Portal Manajemen</h2>
+            <p class="text-gray-500 text-sm mb-6">Silakan login untuk mengakses dashboard</p>
+            
+            <form onsubmit="handleLogin(event)" class="space-y-4 text-left">
+                <div>
+                    <label class="block text-sm font-bold text-gray-700 mb-1">User ID</label>
+                    <input type="text" id="userid" required placeholder="Ketik: admin" class="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-yogyaGreen focus:border-yogyaGreen transition">
+                </div>
+                <div>
+                    <label class="block text-sm font-bold text-gray-700 mb-1">Password</label>
+                    <input type="password" id="password" required placeholder="Ketik: yogya123" class="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-yogyaGreen focus:border-yogyaGreen transition">
+                </div>
+                <button type="submit" class="w-full bg-yogyaGreen text-white font-bold py-3 rounded-lg shadow-lg hover:bg-green-700 transition active:scale-95 mt-4">
+                    Masuk
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <!-- DASHBOARD ADMIN -->
+    <div id="dashboardScreen" class="hidden-view flex w-full h-full">
+        
+        <!-- Sidebar -->
+        <aside class="w-64 bg-white shadow-xl flex flex-col z-10 relative">
+            <div class="p-6 text-center border-b border-gray-100">
+                <img src="logo_yogya_garut.png" alt="Logo" class="w-24 mx-auto mb-2">
+                <p class="text-xs font-bold text-yogyaGreen uppercase tracking-wider">Admin Panel</p>
+            </div>
+            <nav class="flex-1 p-4 space-y-2">
+                <button onclick="switchTab('keluhan')" id="btn-keluhan" class="w-full text-left px-4 py-3 rounded-lg bg-red-50 text-yogyaRed font-bold flex items-center gap-3 transition">
+                    <span>📨</span> Data Keluhan
+                </button>
+                <button onclick="switchTab('promo')" id="btn-promo" class="w-full text-left px-4 py-3 rounded-lg text-gray-600 hover:bg-gray-50 font-bold flex items-center gap-3 transition">
+                    <span>🏷️</span> Kelola Promo
+                </button>
+            </nav>
+            <div class="p-4 border-t border-gray-100">
+                <button onclick="location.reload()" class="w-full px-4 py-2 text-sm text-gray-500 hover:text-red-500 font-bold flex items-center justify-center gap-2 transition">
+                    Keluar (Logout)
+                </button>
+            </div>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="flex-1 overflow-y-auto bg-gray-50 p-8">
+            
+            <!-- TAB 1: DATA KELUHAN (R = Read) -->
+            <div id="tab-keluhan" class="space-y-6">
+                <div class="flex justify-between items-center bg-white p-6 rounded-xl border border-gray-200 shadow-sm">
+                    <div>
+                        <h1 class="text-2xl font-extrabold text-gray-800">Data Keluhan & Saran</h1>
+                        <p class="text-sm text-gray-500">Monitor masukan pelanggan secara real-time</p>
+                    </div>
+                    <button onclick="loadDataKeluhan()" class="bg-gray-100 border border-gray-200 text-gray-700 px-4 py-2 rounded-lg text-sm font-bold shadow-sm hover:bg-gray-200 flex items-center gap-2 active:scale-95 transition">
+                        <span>🔄</span> Segarkan Data
+                    </button>
+                </div>
+                
+                <!-- Tabel Real-Time -->
+                <div class="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
+                    <table class="w-full text-left border-collapse">
+                        <thead>
+                            <tr class="bg-gray-100 border-b border-gray-200 text-sm">
+                                <th class="p-4 font-bold text-gray-700">Waktu</th>
+                                <th class="p-4 font-bold text-gray-700">Kategori</th>
+                                <th class="p-4 font-bold text-gray-700">Isi Pesan</th>
+                                <th class="p-4 font-bold text-gray-700">Status</th>
+                                <th class="p-4 font-bold text-gray-700 text-center">Aksi (U/D)</th>
+                            </tr>
+                        </thead>
+                        <tbody id="tableBodyKeluhan">
+                            <!-- Data akan dimuat ke sini dari Google Sheets -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- TAB 2: KELOLA PROMO (Akan kita kerjakan nanti) -->
+            <div id="tab-promo" class="hidden-view space-y-6">
+                <div class="flex justify-between items-center bg-white p-6 rounded-xl border border-gray-200 shadow-sm">
+                    <div>
+                        <h1 class="text-2xl font-extrabold text-gray-800">Katalog Promo</h1>
+                        <p class="text-sm text-gray-500">Unggah dan atur gambar promo (C,R,U,D)</p>
+                    </div>
+                    <button class="bg-yogyaGreen text-white px-4 py-2 rounded-lg text-sm font-bold shadow-sm hover:bg-green-700 flex items-center gap-2 active:scale-95 transition">
+                        <span>➕</span> Tambah Promo
+                    </button>
+                </div>
+                <div class="bg-white p-8 text-center rounded-xl border border-gray-200 border-dashed">
+                    <p class="text-gray-500 font-bold">Fitur Kelola Promo belum diaktifkan.</p>
+                </div>
+            </div>
+
+        </main>
+    </div>
+
+    <script>
+        const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbx0aSjDgE9Ep2n10QqDPBzz18jGGD1U0R4X9nJ4yvPTUpDnXCeN0l8TMZYVy0_CHICt/exec';
+
+        // 1. Logika Login
+        function handleLogin(event) {
+            event.preventDefault();
+            const user = document.getElementById('userid').value;
+            const pass = document.getElementById('password').value;
+
+            // Kredensial hard-code untuk kemudahan
+            if (user === 'admin' && pass === 'yogya123') {
+                document.getElementById('loginScreen').style.display = 'none';
+                document.getElementById('dashboardScreen').classList.remove('hidden-view');
+                
+                // Langsung muat data dari Google Sheets saat berhasil login!
+                loadDataKeluhan();
+            } else {
+                alert('User ID atau Password salah!');
+            }
+        }
+
+        // 2. Logika Tarik Data (Read) dari Google Sheets
+        async function loadDataKeluhan() {
+            const tbody = document.getElementById('tableBodyKeluhan');
+            tbody.innerHTML = '<tr><td colspan="5" class="p-8 text-center text-gray-500"><svg class="animate-spin h-6 w-6 mx-auto mb-2 text-yogyaRed" viewBox="0 0 24 24" fill="none" stroke="currentColor"><circle cx="12" cy="12" r="10" stroke-width="3" class="opacity-25"></circle><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z" class="opacity-75"></path></svg>Memuat data dari database...</td></tr>';
+            
+            try {
+                // Menarik data GET menggunakan parameter action=getKeluhan
+                const response = await fetch(SCRIPT_URL + '?action=getKeluhan');
+                const data = await response.json();
+                
+                tbody.innerHTML = ''; 
+                
+                if(data.length === 0) {
+                     tbody.innerHTML = '<tr><td colspan="5" class="p-4 text-center text-gray-500">Belum ada data keluhan.</td></tr>';
+                     return;
+                }
+
+                // Render setiap baris data ke dalam tabel HTML
+                data.forEach(item => {
+                    // Penentuan warna label status
+                    let statusColor = item.status === 'Baru_Masuk' ? 'bg-yellow-100 text-yellow-700' : 
+                                      item.status === 'Diproses' ? 'bg-blue-100 text-blue-700' : 'bg-green-100 text-green-700';
+                    
+                    // Tombol foto akan muncul jika ada link foto
+                    let fotoHtml = item.foto !== 'Tidak_Ada_Foto' ? `<a href="${item.foto}" target="_blank" class="text-blue-500 text-xs hover:underline mt-1 block">🖼️ Lihat Bukti</a>` : '';
+
+                    let row = `
+                        <tr class="border-b border-gray-100 hover:bg-gray-50 transition">
+                            <td class="p-4 text-sm text-gray-600 w-32">${item.waktu.substring(0, 10)}<br><span class="text-xs text-gray-400">${item.waktu.substring(11, 16)}</span></td>
+                            <td class="p-4"><span class="bg-gray-100 border border-gray-200 px-3 py-1 rounded-md text-xs font-bold text-gray-700">${item.kategori}</span></td>
+                            <td class="p-4 text-sm text-gray-700 max-w-xs">
+                                <p class="truncate font-semibold">${item.pesan}</p>
+                                ${fotoHtml}
+                            </td>
+                            <td class="p-4"><span class="${statusColor} px-3 py-1 rounded-full text-xs font-bold">${item.status}</span></td>
+                            <td class="p-4 text-center space-x-1">
+                                <button onclick="alert('Fitur Update segera hadir!')" class="bg-blue-500 text-white px-3 py-1.5 rounded text-xs font-bold hover:bg-blue-600 shadow-sm transition">Proses</button>
+                                <button onclick="alert('Fitur Delete segera hadir!')" class="bg-red-50 border border-red-200 text-red-600 px-3 py-1.5 rounded text-xs font-bold hover:bg-red-100 transition">Hapus</button>
+                            </td>
+                        </tr>
+                    `;
+                    tbody.innerHTML += row;
+                });
+            } catch (error) {
+                tbody.innerHTML = '<tr><td colspan="5" class="p-4 text-center text-red-500">Gagal terhubung ke Google Sheets. Pastikan URL Script benar.</td></tr>';
+            }
+        }
+
+        // 3. Logika Ganti Tab
+        function switchTab(tabName) {
+            const tabKeluhan = document.getElementById('tab-keluhan');
+            const tabPromo = document.getElementById('tab-promo');
+            const btnKeluhan = document.getElementById('btn-keluhan');
+            const btnPromo = document.getElementById('btn-promo');
+
+            if (tabName === 'keluhan') {
+                tabKeluhan.classList.remove('hidden-view');
+                tabPromo.classList.add('hidden-view');
+                btnKeluhan.className = 'w-full text-left px-4 py-3 rounded-lg bg-red-50 text-yogyaRed font-bold flex items-center gap-3 transition';
+                btnPromo.className = 'w-full text-left px-4 py-3 rounded-lg text-gray-600 hover:bg-gray-50 font-bold flex items-center gap-3 transition';
+            } else {
+                tabPromo.classList.remove('hidden-view');
+                tabKeluhan.classList.add('hidden-view');
+                btnPromo.className = 'w-full text-left px-4 py-3 rounded-lg bg-green-50 text-yogyaGreen font-bold flex items-center gap-3 transition';
+                btnKeluhan.className = 'w-full text-left px-4 py-3 rounded-lg text-gray-600 hover:bg-gray-50 font-bold flex items-center gap-3 transition';
+            }
+        }
+    </script>
+</body>
+</html>
