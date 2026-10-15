@@ -13,7 +13,12 @@
     <script>
         tailwind.config = { theme: { extend: { fontFamily: { sans: ['Nunito', 'sans-serif'] }, colors: { yogyaRed: '#E3232A', yogyaGreen: '#008A45', yogyaYellow: '#FBD116', yogyaOrange: '#F47920' } } } }
     </script>
+
+    
     <style>
+        /* BARIS INI YANG SEBELUMNYA TERTINGGAL */
+        .hidden-view { display: none !important; } 
+        
         .modal-enter { opacity: 0; transform: translateY(20px) scale(0.95); }
         .modal-enter-active { opacity: 1; transform: translateY(0) scale(1); transition: opacity 400ms ease-out, transform 400ms ease-out; }
         ::-webkit-scrollbar { display: none; }
