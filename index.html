@@ -22,8 +22,6 @@
         @keyframes fadeSlideUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
         .category-radio:checked + div { border-color: #E3232A; background-color: #fef2f2; color: #E3232A; }
         .swiper-pagination-bullet-active { background-color: #E3232A !important; }
-        
-        /* Animasi Skeleton Loading untuk Promo */
         .skeleton { background: #e2e8f0; animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite; }
         @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: .5; } }
     </style>
@@ -138,7 +136,7 @@
             </form>
         </div>
 
-        <!-- VIEW 3: KATALOG PROMO (DINAMIS TERHUBUNG DATABASE) -->
+        <!-- VIEW 3: KATALOG PROMO -->
         <div id="promoView" class="w-full view-hidden">
             <div class="flex items-center mb-6">
                 <button onclick="toggleView('menuView')" class="p-2 bg-gray-100 rounded-full hover:bg-gray-200 active:scale-90 transition mr-4 text-gray-600"><svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M15 19l-7-7 7-7"></path></svg></button>
@@ -150,7 +148,6 @@
             
             <div class="swiper mySwiper w-full h-[60vh] rounded-2xl shadow-sm border border-gray-200 bg-gray-100 overflow-hidden">
                 <div class="swiper-wrapper" id="promoWrapper">
-                    <!-- Tampilan Loading Awal (Skeleton) -->
                     <div class="swiper-slide flex justify-center items-center bg-white p-4">
                         <div class="w-full h-full skeleton rounded-xl flex flex-col items-center justify-center text-gray-400">
                             <svg class="animate-spin h-8 w-8 mb-4" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4" fill="none" class="opacity-25"></circle><path fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z" class="opacity-75"></path></svg>
@@ -186,6 +183,15 @@
         </div>
     </div>
 
+    <!-- LIGHTBOX PROMO (FITUR ZOOM) -->
+    <div id="promoLightbox" class="hidden-view fixed inset-0 bg-black/95 z-[60] flex flex-col items-center justify-center p-4 transition-opacity" onclick="closePromoZoom()">
+        <button class="absolute top-4 right-6 text-white text-3xl font-bold hover:text-yogyaRed transition-colors">&times;</button>
+        <div class="relative w-full max-w-2xl h-[85vh] flex items-center justify-center">
+            <img id="promoLightboxImg" src="" class="max-w-full max-h-full rounded-lg object-contain transition-transform duration-300" />
+        </div>
+        <p class="text-white/70 text-xs mt-4 font-bold bg-black/50 px-4 py-2 rounded-full shadow-lg">Ketuk di mana saja untuk menutup</p>
+    </div>
+
     <!-- SCRIPT UTAMA -->
     <script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
     <script>
@@ -196,7 +202,6 @@
             const modalContent = document.getElementById('modalContent');
             setTimeout(() => { modalContent.classList.add('modal-enter-active'); }, 100);
             
-            // Inisialisasi Swiper
             swiperInstance = new Swiper(".mySwiper", { 
                 spaceBetween: 16, 
                 grabCursor: true, 
@@ -225,6 +230,18 @@
         }
 
         // ===============================================
+        // FUNGSI ZOOM PROMO
+        // ===============================================
+        function openPromoZoom(url) {
+            document.getElementById('promoLightboxImg').src = url;
+            document.getElementById('promoLightbox').classList.remove('hidden-view');
+        }
+
+        function closePromoZoom() {
+            document.getElementById('promoLightbox').classList.add('hidden-view');
+        }
+
+        // ===============================================
         // FUNGSI MEMUAT PROMO DARI GOOGLE SHEETS
         // ===============================================
         function getDriveDirectLink(url) {
@@ -239,7 +256,6 @@
         async function loadCustomerPromo() {
             const wrapper = document.getElementById('promoWrapper');
             
-            // Jangan load ulang jika sudah ada gambarnya (menghemat data)
             if(wrapper.children.length > 1 || (wrapper.children[0] && !wrapper.children[0].innerHTML.includes('Menyinkronkan Promo'))) {
                 return;
             }
@@ -248,7 +264,7 @@
                 const response = await fetch(SCRIPT_URL + '?action=getPromo');
                 const data = await response.json();
                 
-                wrapper.innerHTML = ''; // Hapus skeleton loader
+                wrapper.innerHTML = ''; 
                 
                 if(data.length === 0) {
                     wrapper.innerHTML = `
@@ -262,13 +278,18 @@
                 } else {
                     data.forEach(item => {
                         let imgUrl = getDriveDirectLink(item.foto);
+                        // Menambahkan interaksi klik untuk memanggil pop-up zoom
                         wrapper.innerHTML += `
-                            <div class="swiper-slide flex justify-center items-center relative bg-white">
+                            <div class="swiper-slide flex justify-center items-center relative bg-white cursor-pointer group" onclick="openPromoZoom('${imgUrl}')">
                                 <img src="${imgUrl}" alt="Promo Yogya Garut" class="w-full h-full object-cover">
+                                <!-- Petunjuk Visual -->
+                                <div class="absolute bottom-3 right-3 bg-black/60 text-white text-[10px] font-bold px-3 py-1.5 rounded-full backdrop-blur-sm shadow-md group-hover:scale-105 transition-transform flex items-center gap-1">
+                                    <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0zM10 7v3m0 0v3m0-3h3m-3 0H7"></path></svg>
+                                    Ketuk Perbesar
+                                </div>
                             </div>`;
                     });
                 }
-                // Perbarui swiper setelah gambar ditambahkan
                 swiperInstance.update();
                 swiperInstance.slideTo(0);
                 
