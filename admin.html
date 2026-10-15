@@ -7,13 +7,9 @@
     <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
     <script src="https://cdn.tailwindcss.com"></script>
     <script>
-        tailwind.config = {
-            theme: { extend: { fontFamily: { sans: ['Nunito', 'sans-serif'] }, colors: { yogyaRed: '#E3232A', yogyaGreen: '#008A45', } } }
-        }
+        tailwind.config = { theme: { extend: { fontFamily: { sans: ['Nunito', 'sans-serif'] }, colors: { yogyaRed: '#E3232A', yogyaGreen: '#008A45', } } } }
     </script>
-    <style> 
-        .hidden-view { display: none !important; } 
-    </style>
+    <style> .hidden-view { display: none !important; } </style>
 </head>
 <body class="bg-gray-100 font-sans text-gray-800 h-screen overflow-hidden flex">
 
@@ -40,7 +36,7 @@
     <!-- DASHBOARD -->
     <div id="dashboardScreen" class="hidden-view flex w-full h-full">
         <!-- Sidebar -->
-        <aside class="w-64 bg-white shadow-xl flex flex-col z-10">
+        <aside class="w-64 bg-white shadow-xl flex flex-col z-10 relative">
             <div class="p-6 text-center border-b border-gray-100">
                 <img src="logo_yogya_garut.png" alt="Logo" class="w-24 mx-auto mb-2">
                 <p class="text-xs font-bold text-yogyaGreen uppercase tracking-wider">Admin Panel</p>
@@ -50,12 +46,14 @@
                 <button onclick="switchTab('promo')" id="btn-promo" class="w-full text-left px-4 py-3 rounded-lg text-gray-600 hover:bg-gray-50 font-bold flex items-center gap-3"><span>🏷️</span> Kelola Promo</button>
             </nav>
             <div class="p-4 border-t border-gray-100">
-                <button onclick="location.reload()" class="w-full px-4 py-2 text-sm text-gray-500 hover:text-red-500 font-bold flex items-center justify-center gap-2">Keluar (Logout)</button>
+                <button onclick="location.reload()" class="w-full px-4 py-2 text-sm text-gray-500 hover:text-red-500 font-bold flex items-center justify-center gap-2">Keluar</button>
             </div>
         </aside>
 
         <!-- Main Content -->
         <main class="flex-1 overflow-y-auto bg-gray-50 p-8 relative">
+            
+            <!-- TAB: DATA KELUHAN -->
             <div id="tab-keluhan" class="space-y-6">
                 <div class="flex justify-between items-center bg-white p-6 rounded-xl shadow-sm border border-gray-200">
                     <div>
@@ -64,101 +62,89 @@
                     </div>
                     <button onclick="loadDataKeluhan()" class="bg-gray-100 px-4 py-2 rounded-lg text-sm font-bold shadow-sm hover:bg-gray-200 active:scale-95 transition">🔄 Segarkan Data</button>
                 </div>
-                
                 <div class="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
                     <table class="w-full text-left border-collapse">
                         <thead>
-                            <tr class="bg-gray-100 text-sm">
-                                <th class="p-4 font-bold text-gray-700">Waktu</th>
-                                <th class="p-4 font-bold text-gray-700">Kategori</th>
-                                <th class="p-4 font-bold text-gray-700">Preview Pesan</th>
-                                <th class="p-4 font-bold text-gray-700">Status</th>
-                                <th class="p-4 font-bold text-gray-700 text-center">Aksi</th>
-                            </tr>
+                            <tr class="bg-gray-100 text-sm"><th class="p-4 font-bold">Waktu</th><th class="p-4 font-bold">Kategori</th><th class="p-4 font-bold">Preview Pesan</th><th class="p-4 font-bold">Status</th><th class="p-4 font-bold text-center">Aksi</th></tr>
                         </thead>
                         <tbody id="tableBodyKeluhan"></tbody>
                     </table>
                 </div>
             </div>
 
-            <!-- Tab Promo -->
+            <!-- TAB: KELOLA PROMO -->
             <div id="tab-promo" class="hidden-view space-y-6">
-                <div class="flex justify-between items-center bg-white p-6 rounded-xl shadow-sm">
-                    <h1 class="text-2xl font-extrabold">Katalog Promo</h1>
-                    <button class="bg-yogyaGreen text-white px-4 py-2 rounded-lg text-sm font-bold shadow-sm">➕ Tambah Promo</button>
+                <div class="flex justify-between items-center bg-white p-6 rounded-xl shadow-sm border border-gray-200">
+                    <div>
+                        <h1 class="text-2xl font-extrabold text-gray-800">Katalog Promo</h1>
+                        <p class="text-sm text-gray-500">Unggah dan atur gambar promo yang tampil di aplikasi</p>
+                    </div>
+                    <div>
+                        <!-- Input File Tersembunyi -->
+                        <input type="file" id="inputPromo" accept="image/*" class="hidden" onchange="handleUploadPromo(this)">
+                        <button onclick="document.getElementById('inputPromo').click()" id="btnUploadPromo" class="bg-yogyaGreen text-white px-4 py-2 rounded-lg text-sm font-bold shadow-sm hover:bg-green-700 flex items-center gap-2 active:scale-95 transition">
+                            <span>➕</span> Tambah Promo Baru
+                        </button>
+                    </div>
                 </div>
-                <div class="bg-white p-8 text-center rounded-xl border border-gray-200 border-dashed">
-                    <p class="text-gray-500 font-bold">Fitur Kelola Promo sedang dikembangkan.</p>
+                
+                <!-- Area Galeri Promo -->
+                <div id="gridPromo" class="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 gap-6">
+                    <!-- Banner Promo Akan Muncul Di Sini -->
                 </div>
             </div>
+
         </main>
     </div>
 
-    <!-- MODAL POP-UP DETAIL (VIEW & UPDATE) -->
+    <!-- MODAL POP-UP KELUHAN (Sama seperti sebelumnya) -->
     <div id="detailModal" class="hidden-view fixed inset-0 bg-black/60 z-40 flex items-center justify-center p-4 backdrop-blur-sm">
         <div class="bg-white rounded-2xl shadow-2xl w-full max-w-lg overflow-hidden flex flex-col max-h-[90vh]">
             <div class="bg-gray-50 p-4 border-b border-gray-200 flex justify-between items-center">
                 <h3 class="font-bold text-lg text-gray-800">Detail Laporan</h3>
                 <button onclick="closeModal()" class="text-gray-400 hover:text-red-500 font-bold text-xl">&times;</button>
             </div>
-            
             <div class="p-6 overflow-y-auto space-y-4">
                 <div class="flex gap-4 border-b border-gray-100 pb-4">
                     <div class="flex-1">
-                        <p class="text-xs text-gray-400 font-bold uppercase">Pengirim</p>
-                        <p id="detNama" class="font-bold text-gray-800"></p>
-                        <p id="detWA" class="text-sm text-blue-600 font-bold"></p>
+                        <p class="text-xs text-gray-400 font-bold uppercase">Pengirim</p><p id="detNama" class="font-bold"></p><a id="detWA" class="text-sm text-blue-600 font-bold" target="_blank"></a>
                     </div>
                     <div class="flex-1">
-                        <p class="text-xs text-gray-400 font-bold uppercase">Waktu & Kategori</p>
-                        <p id="detWaktu" class="text-sm text-gray-600"></p>
-                        <p id="detKategori" class="text-sm font-bold text-yogyaRed mt-1"></p>
+                        <p class="text-xs text-gray-400 font-bold uppercase">Waktu & Kategori</p><p id="detWaktu" class="text-sm"></p><p id="detKategori" class="text-sm font-bold text-yogyaRed mt-1"></p>
                     </div>
                 </div>
-                
                 <div>
                     <p class="text-xs text-gray-400 font-bold uppercase mb-1">Pesan Lengkap</p>
                     <div id="detPesan" class="p-4 bg-gray-50 rounded-lg text-sm text-gray-700 whitespace-pre-wrap border border-gray-200"></div>
                 </div>
-
-                <!-- PREVIEW GAMBAR NATIVE (Dikerjakan sesuai skema visual baru) -->
                 <div id="detFotoArea" class="hidden-view">
                     <p class="text-xs text-gray-400 font-bold uppercase mb-1">Lampiran Foto</p>
                     <div class="relative group cursor-zoom-in overflow-hidden rounded-lg border border-gray-200 max-h-56 bg-gray-50" onclick="zoomImage()">
-                        <img id="detFotoImg" src="" alt="Bukti" class="w-full h-full object-contain max-h-56">
-                        <div class="absolute bottom-0 inset-x-0 bg-black/40 text-center py-1 text-[10px] text-white font-bold tracking-wide opacity-0 group-hover:opacity-100 transition-opacity">
-                            🔎 Klik gambar untuk memperbesar
-                        </div>
+                        <img id="detFotoImg" src="" class="w-full h-full object-contain max-h-56">
+                        <div class="absolute bottom-0 inset-x-0 bg-black/40 text-center py-1 text-[10px] text-white font-bold opacity-0 group-hover:opacity-100 transition-opacity">🔎 Klik perbesar</div>
                     </div>
                 </div>
             </div>
-
-            <!-- Area Update Status -->
-            <div class="bg-gray-50 p-4 border-t border-gray-200">
-                <p class="text-xs text-gray-500 font-bold mb-2">Tindakan Admin (Ubah Status):</p>
-                <div class="flex gap-2">
-                    <select id="statusSelect" class="flex-1 p-2 border border-gray-300 rounded-lg font-bold text-sm focus:ring-2 focus:ring-yogyaGreen">
-                        <option value="Baru_Masuk">🔴 Baru Masuk</option>
-                        <option value="Diproses">🟡 Sedang Diproses</option>
-                        <option value="Selesai">🟢 Selesai</option>
-                    </select>
-                    <button id="btnUpdateStatus" class="bg-yogyaGreen text-white px-4 py-2 rounded-lg text-sm font-bold hover:bg-green-700 active:scale-95 shadow-md">Simpan Perubahan</button>
-                </div>
+            <div class="bg-gray-50 p-4 border-t border-gray-200 flex gap-2">
+                <select id="statusSelect" class="flex-1 p-2 border border-gray-300 rounded-lg font-bold text-sm focus:ring-2 focus:ring-yogyaGreen">
+                    <option value="Baru_Masuk">🔴 Baru Masuk</option><option value="Diproses">🟡 Sedang Diproses</option><option value="Selesai">🟢 Selesai</option>
+                </select>
+                <button id="btnUpdateStatus" class="bg-yogyaGreen text-white px-4 py-2 rounded-lg text-sm font-bold shadow-md">Simpan Perubahan</button>
             </div>
         </div>
     </div>
 
-    <!-- ZOOM LIGHTBOX (DI ATAS MODAL DETAIL) -->
+    <!-- ZOOM LIGHTBOX -->
     <div id="lightbox" class="hidden-view fixed inset-0 bg-black/95 z-50 flex flex-col items-center justify-center p-4" onclick="closeZoom()">
-        <button class="absolute top-4 right-6 text-white text-3xl font-bold hover:text-red-500">&times;</button>
-        <img id="lightboxImg" src="" class="max-w-full max-h-[85vh] rounded-lg shadow-2xl object-contain transition-transform" />
-        <p class="text-white/60 text-xs mt-3">Klik di luar gambar untuk kembali</p>
+        <button class="absolute top-4 right-6 text-white text-3xl font-bold">&times;</button>
+        <img id="lightboxImg" src="" class="max-w-full max-h-[85vh] rounded-lg object-contain transition-transform" />
+        <p class="text-white/60 text-xs mt-3">Klik untuk kembali</p>
     </div>
 
-    <!-- SCRIPT UTAMA -->
     <script>
         const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbx0aSjDgE9Ep2n10QqDPBzz18jGGD1U0R4X9nJ4yvPTUpDnXCeN0l8TMZYVy0_CHICt/exec';
         let globalKeluhanData = []; 
+        let currentImageDirectUrl = '';
 
         function handleLogin(event) {
             event.preventDefault();
@@ -166,149 +152,149 @@
                 document.getElementById('loginScreen').style.display = 'none';
                 document.getElementById('dashboardScreen').classList.remove('hidden-view');
                 loadDataKeluhan();
-            } else {
-                alert('User ID atau Password salah!');
-            }
+                loadDataPromo(); // Panggil fungsi memuat promo saat login
+            } else { alert('User ID atau Password salah!'); }
         }
 
-        // Helper untuk mengubah Link Drive menjadi file visual (Direct Load)
         function getDriveDirectLink(url) {
             if (!url || url === 'Tidak_Ada_Foto' || url === 'Tidak ada foto') return '';
             let id = '';
             const match1 = url.match(/\/file\/d\/([^\/]+)/);
             const match2 = url.match(/id=([^&]+)/);
-            if (match1) id = match1[1];
-            else if (match2) id = match2[1];
-            
-            // Bypass security menggunakan Direct Rendering Server Google
+            if (match1) id = match1[1]; else if (match2) id = match2[1];
             return id ? `https://lh3.googleusercontent.com/d/${id}` : url;
         }
 
+        // ================= KELUHAN & SARAN =================
         async function loadDataKeluhan() {
             const tbody = document.getElementById('tableBodyKeluhan');
             tbody.innerHTML = '<tr><td colspan="5" class="p-8 text-center text-gray-500">Memuat data dari server...</td></tr>';
             try {
                 const response = await fetch(SCRIPT_URL + '?action=getKeluhan');
                 const data = await response.json();
-                globalKeluhanData = data; 
-                tbody.innerHTML = ''; 
-                
-                if(data.length === 0) {
-                     tbody.innerHTML = '<tr><td colspan="5" class="p-4 text-center text-gray-500">Belum ada data keluhan.</td></tr>';
-                     return;
-                }
-
+                globalKeluhanData = data; tbody.innerHTML = ''; 
+                if(data.length === 0) { tbody.innerHTML = '<tr><td colspan="5" class="p-4 text-center text-gray-500">Belum ada data keluhan.</td></tr>'; return; }
                 data.forEach((item, index) => {
-                    let statusColor = item.status === 'Baru_Masuk' ? 'bg-red-100 text-red-700' : 
-                                      item.status === 'Diproses' ? 'bg-yellow-100 text-yellow-700' : 'bg-green-100 text-green-700';
-                    let row = `
+                    let statusColor = item.status === 'Baru_Masuk' ? 'bg-red-100 text-red-700' : item.status === 'Diproses' ? 'bg-yellow-100 text-yellow-700' : 'bg-green-100 text-green-700';
+                    tbody.innerHTML += `
                         <tr class="border-b border-gray-100 hover:bg-gray-50 transition">
-                            <td class="p-4 text-sm text-gray-600">${item.waktu.substring(0, 10)}</td>
-                            <td class="p-4 text-sm font-bold">${item.kategori}</td>
+                            <td class="p-4 text-sm text-gray-600">${item.waktu.substring(0, 10)}</td><td class="p-4 text-sm font-bold">${item.kategori}</td>
                             <td class="p-4 text-sm text-gray-700"><p class="truncate w-48">${item.pesan}</p></td>
                             <td class="p-4"><span class="${statusColor} px-2 py-1 rounded text-xs font-bold">${item.status.replace('_', ' ')}</span></td>
-                            <td class="p-4 text-center space-x-2">
-                                <button onclick="openModal(${index})" class="bg-blue-50 text-blue-600 px-3 py-1.5 rounded-lg text-xs font-bold hover:bg-blue-100 transition border border-blue-200">👁️ Lihat</button>
-                                <button onclick="hapusData(${item.baris})" class="bg-red-50 text-red-600 px-3 py-1.5 rounded-lg text-xs font-bold hover:bg-red-100 transition border border-red-200">🗑️ Hapus</button>
-                            </td>
-                        </tr>
-                    `;
-                    tbody.innerHTML += row;
+                            <td class="p-4 text-center space-x-2"><button onclick="openModal(${index})" class="bg-blue-50 text-blue-600 px-3 py-1.5 rounded-lg text-xs font-bold border border-blue-200">👁️ Lihat</button><button onclick="hapusDataKeluhan(${item.baris})" class="bg-red-50 text-red-600 px-3 py-1.5 rounded-lg text-xs font-bold border border-red-200">🗑️ Hapus</button></td>
+                        </tr>`;
                 });
-            } catch (error) {
-                tbody.innerHTML = '<tr><td colspan="5" class="p-4 text-center text-red-500">Koneksi ke database gagal.</td></tr>';
-            }
+            } catch (error) { tbody.innerHTML = '<tr><td colspan="5" class="p-4 text-center text-red-500">Koneksi ke database gagal.</td></tr>'; }
         }
-
-        // --- MODAL VIEW DETAIL ---
-        let currentImageDirectUrl = '';
 
         function openModal(index) {
             const data = globalKeluhanData[index];
-
             document.getElementById('detNama').innerText = data.nama || 'Anonim';
             document.getElementById('detWA').innerText = data.whatsapp && data.whatsapp !== '-' ? data.whatsapp : 'Tidak melampirkan WA';
             document.getElementById('detWA').href = data.whatsapp && data.whatsapp !== '-' ? `https://wa.me/${data.whatsapp}` : '#';
+            document.getElementById('detWaktu').innerText = data.waktu; document.getElementById('detKategori').innerText = data.kategori; document.getElementById('detPesan').innerText = data.pesan;
             
-            document.getElementById('detWaktu').innerText = data.waktu;
-            document.getElementById('detKategori').innerText = data.kategori;
-            document.getElementById('detPesan').innerText = data.pesan;
-
-            // Membuka Native Image Preview (Mencegah buka tab baru)
             const fotoArea = document.getElementById('detFotoArea');
-            if(data.foto && data.foto !== 'Tidak_Ada_Foto' && data.foto !== 'Tidak ada foto') {
-                fotoArea.classList.remove('hidden-view');
-                currentImageDirectUrl = getDriveDirectLink(data.foto);
-                document.getElementById('detFotoImg').src = currentImageDirectUrl;
-            } else {
-                fotoArea.classList.add('hidden-view');
-                currentImageDirectUrl = '';
-            }
+            if(data.foto && data.foto !== 'Tidak_Ada_Foto') {
+                fotoArea.classList.remove('hidden-view'); currentImageDirectUrl = getDriveDirectLink(data.foto); document.getElementById('detFotoImg').src = currentImageDirectUrl;
+            } else { fotoArea.classList.add('hidden-view'); currentImageDirectUrl = ''; }
 
             document.getElementById('statusSelect').value = data.status;
             document.getElementById('detailModal').classList.remove('hidden-view');
-            
             document.getElementById('btnUpdateStatus').onclick = () => updateStatus(data.baris);
         }
 
-        function closeModal() {
-            document.getElementById('detailModal').classList.add('hidden-view');
+        function closeModal() { document.getElementById('detailModal').classList.add('hidden-view'); }
+        function zoomImage() { if(currentImageDirectUrl) { document.getElementById('lightboxImg').src = currentImageDirectUrl; document.getElementById('lightbox').classList.remove('hidden-view'); } }
+        function closeZoom() { document.getElementById('lightbox').classList.add('hidden-view'); }
+
+        async function updateStatus(baris) {
+            const statusBaru = document.getElementById('statusSelect').value; const btn = document.getElementById('btnUpdateStatus');
+            btn.innerText = 'Menyimpan...'; btn.disabled = true;
+            try { await fetch(SCRIPT_URL, { method: 'POST', mode: 'no-cors', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ action: 'update', baris: baris, status: statusBaru }) });
+                closeModal(); loadDataKeluhan(); 
+            } catch(e) { alert('Gagal update status!'); } finally { btn.innerText = 'Simpan Perubahan'; btn.disabled = false; }
         }
 
-        // --- FUNGSI ZOOM LIGHTBOX (NATIF TANPA BUKA TAB BARU) ---
-        function zoomImage() {
-            if(currentImageDirectUrl) {
-                document.getElementById('lightboxImg').src = currentImageDirectUrl;
-                document.getElementById('lightbox').classList.remove('hidden-view');
+        async function hapusDataKeluhan(baris) {
+            if(confirm('Hapus keluhan ini permanen?')) {
+                try { await fetch(SCRIPT_URL, { method: 'POST', mode: 'no-cors', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ action: 'delete', baris: baris }) });
+                    loadDataKeluhan(); 
+                } catch(e) { alert('Gagal menghapus data!'); }
             }
         }
 
-        function closeZoom() {
-            document.getElementById('lightbox').classList.add('hidden-view');
+        // ================= KELOLA PROMO =================
+        function getBase64(file) {
+            return new Promise((resolve, reject) => {
+                const reader = new FileReader(); reader.readAsDataURL(file);
+                reader.onload = () => resolve(reader.result); reader.onerror = error => reject(error);
+            });
         }
 
-        // --- FUNGSI UPDATE STATUS ---
-        async function updateStatus(baris) {
-            const statusBaru = document.getElementById('statusSelect').value;
-            const btn = document.getElementById('btnUpdateStatus');
-            btn.innerText = 'Menyimpan...'; btn.disabled = true;
+        async function loadDataPromo() {
+            const grid = document.getElementById('gridPromo');
+            grid.innerHTML = '<p class="text-gray-500 text-sm col-span-3">Memuat galeri promo...</p>';
+            try {
+                const response = await fetch(SCRIPT_URL + '?action=getPromo');
+                const data = await response.json();
+                grid.innerHTML = '';
+                if(data.length === 0) { grid.innerHTML = '<div class="col-span-3 bg-white p-8 text-center rounded-xl border border-gray-200 border-dashed text-gray-500 font-bold">Belum ada promo yang diunggah.</div>'; return; }
+                
+                data.forEach(item => {
+                    let imgUrl = getDriveDirectLink(item.foto);
+                    grid.innerHTML += `
+                        <div class="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden relative group">
+                            <img src="${imgUrl}" class="w-full h-56 object-cover bg-gray-100">
+                            <div class="p-4">
+                                <p class="text-xs font-bold text-gray-800">Diunggah: ${item.waktu.substring(0, 10)}</p>
+                            </div>
+                            <div class="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition flex justify-center items-center backdrop-blur-sm">
+                                <button onclick="hapusPromo(${item.baris})" class="bg-red-500 text-white font-bold py-2 px-4 rounded-lg shadow-lg hover:bg-red-600 transition">🗑️ Hapus Banner</button>
+                            </div>
+                        </div>`;
+                });
+            } catch (error) { grid.innerHTML = '<p class="text-red-500 text-sm col-span-3">Gagal memuat promo.</p>'; }
+        }
+
+        async function handleUploadPromo(input) {
+            if (!input.files || !input.files[0]) return;
+            const file = input.files[0];
+            if (file.size > 3000000) { alert('Maksimal ukuran gambar promo 3MB!'); return; }
+            
+            const btn = document.getElementById('btnUploadPromo');
+            const originalText = btn.innerHTML;
+            btn.innerHTML = `<svg class="animate-spin h-4 w-4 mr-2 border-t-2 border-white rounded-full" viewBox="0 0 24 24"></svg> Mengunggah...`;
+            btn.disabled = true;
 
             try {
+                let imageBase64 = await getBase64(file);
                 await fetch(SCRIPT_URL, {
-                    method: 'POST', mode: 'no-cors',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ action: 'update', baris: baris, status: statusBaru })
+                    method: 'POST', mode: 'no-cors', headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ action: 'uploadPromo', image: imageBase64 })
                 });
-                closeModal();
-                loadDataKeluhan(); 
-            } catch(e) {
-                alert('Gagal update status!');
-            } finally {
-                btn.innerText = 'Simpan Perubahan'; btn.disabled = false;
-            }
+                alert('Berhasil mengunggah Promo!');
+                loadDataPromo(); // Refresh Galeri
+            } catch (error) { alert('Gagal mengunggah foto. Pastikan internet stabil.'); }
+            finally { btn.innerHTML = originalText; btn.disabled = false; input.value = ''; }
         }
 
-        // --- FUNGSI DELETE DATA ---
-        async function hapusData(baris) {
-            if(confirm('Apakah Anda yakin ingin menghapus data ini secara permanen? Data di Google Sheets akan ikut terhapus.')) {
+        async function hapusPromo(baris) {
+            if(confirm('Hapus banner promo ini? Gambar tidak akan tampil lagi di aplikasi pelanggan.')) {
                 try {
-                    await fetch(SCRIPT_URL, {
-                        method: 'POST', mode: 'no-cors',
-                        headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify({ action: 'delete', baris: baris })
-                    });
-                    loadDataKeluhan(); 
-                } catch(e) {
-                    alert('Gagal menghapus data!');
-                }
+                    await fetch(SCRIPT_URL, { method: 'POST', mode: 'no-cors', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ action: 'deletePromo', baris: baris }) });
+                    loadDataPromo();
+                } catch(e) { alert('Gagal menghapus promo!'); }
             }
         }
 
+        // ================= TAB NAVIGATION =================
         function switchTab(tabName) {
             document.getElementById('tab-keluhan').classList.toggle('hidden-view', tabName !== 'keluhan');
             document.getElementById('tab-promo').classList.toggle('hidden-view', tabName !== 'promo');
             document.getElementById('btn-keluhan').className = tabName === 'keluhan' ? 'w-full text-left px-4 py-3 rounded-lg bg-red-50 text-yogyaRed font-bold flex items-center gap-3' : 'w-full text-left px-4 py-3 rounded-lg text-gray-600 hover:bg-gray-50 font-bold flex items-center gap-3';
             document.getElementById('btn-promo').className = tabName === 'promo' ? 'w-full text-left px-4 py-3 rounded-lg bg-green-50 text-yogyaGreen font-bold flex items-center gap-3' : 'w-full text-left px-4 py-3 rounded-lg text-gray-600 hover:bg-gray-50 font-bold flex items-center gap-3';
+            if(tabName === 'promo') loadDataPromo(); // Pastikan promo termuat saat tab diklik
         }
     </script>
 </body>
