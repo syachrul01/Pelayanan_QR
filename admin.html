@@ -6,20 +6,22 @@
     <title>Admin - Layanan Yogya Garut</title>
     <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
     
-    <!-- Pustaka Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
     <script>
         tailwind.config = { theme: { extend: { fontFamily: { sans: ['Nunito', 'sans-serif'] }, colors: { yogyaRed: '#E3232A', yogyaGreen: '#008A45', } } } }
     </script>
     
-    <!-- Pustaka Export Excel (SheetJS) & PDF (jsPDF) -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.28/jspdf.plugin.autotable.min.js"></script>
 
-    <style> .hidden-view { display: none !important; } </style>
+    <style> 
+        .hidden-view { display: none !important; } 
+        /* Transisi halus untuk sidebar mobile */
+        .sidebar-transition { transition: transform 0.3s ease-in-out; }
+    </style>
 </head>
-<body class="bg-gray-100 font-sans text-gray-800 h-screen overflow-hidden flex">
+<body class="bg-gray-100 font-sans text-gray-800 h-screen overflow-hidden flex relative">
 
     <!-- LAYAR LOGIN -->
     <div id="loginScreen" class="fixed inset-0 bg-gray-900 z-50 flex items-center justify-center p-4">
@@ -41,398 +43,32 @@
         </div>
     </div>
 
-    <!-- DASHBOARD -->
-    <div id="dashboardScreen" class="hidden-view flex w-full h-full">
-        <!-- Sidebar -->
-        <aside class="w-64 bg-white shadow-xl flex flex-col z-10 relative">
-            <div class="p-6 text-center border-b border-gray-100">
-                <img src="logo_yogya_garut.png" alt="Logo" class="w-24 mx-auto mb-2">
-                <p class="text-xs font-bold text-yogyaGreen uppercase tracking-wider">Admin Panel</p>
-            </div>
-            <nav class="flex-1 p-4 space-y-2">
-                <button onclick="switchTab('keluhan')" id="btn-keluhan" class="w-full text-left px-4 py-3 rounded-lg bg-red-50 text-yogyaRed font-bold flex items-center gap-3"><span>📨</span> Data Keluhan</button>
-                <button onclick="switchTab('promo')" id="btn-promo" class="w-full text-left px-4 py-3 rounded-lg text-gray-600 hover:bg-gray-50 font-bold flex items-center gap-3"><span>🏷️</span> Kelola Promo</button>
-            </nav>
-            <div class="p-4 border-t border-gray-100">
-                <button onclick="handleLogout()" class="w-full px-4 py-2 text-sm text-gray-500 hover:text-red-500 font-bold flex items-center justify-center gap-2">Keluar (Logout)</button>
-            </div>
-        </aside>
+    <!-- OVERLAY GELAP UNTUK SIDEBAR MOBILE -->
+    <div id="sidebarOverlay" onclick="toggleSidebar()" class="fixed inset-0 bg-black/50 z-20 hidden md:hidden"></div>
 
-        <!-- Main Content -->
-        <main class="flex-1 overflow-y-auto bg-gray-50 p-8 relative">
-            
-            <!-- TAB: DATA KELUHAN -->
-            <div id="tab-keluhan" class="space-y-6">
-                <!-- Header Card dengan Tombol Export -->
-                <div class="flex justify-between items-center bg-white p-6 rounded-xl shadow-sm border border-gray-200">
-                    <div>
-                        <h1 class="text-2xl font-extrabold text-gray-800">Data Keluhan & Saran</h1>
-                        <p class="text-sm text-gray-500">Monitor masukan pelanggan secara real-time</p>
-                    </div>
-                    <div class="flex items-center gap-2">
-                        <button onclick="exportExcel()" class="bg-green-50 text-green-700 border border-green-200 px-3 py-2 rounded-lg text-sm font-bold shadow-sm hover:bg-green-100 active:scale-95 transition flex items-center gap-1">
-                            <span>📊</span> Unduh Excel
-                        </button>
-                        <button onclick="exportPDF()" class="bg-red-50 text-red-700 border border-red-200 px-3 py-2 rounded-lg text-sm font-bold shadow-sm hover:bg-red-100 active:scale-95 transition flex items-center gap-1">
-                            <span>📄</span> Unduh PDF
-                        </button>
-                        <button onclick="fetchDataKeluhanBackground(true)" id="btnRefresh" class="bg-gray-100 px-4 py-2 rounded-lg text-sm font-bold shadow-sm hover:bg-gray-200 active:scale-95 transition ml-2">
-                            🔄 Segarkan
-                        </button>
-                    </div>
-                </div>
-                
-                <div class="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
-                    <table class="w-full text-left border-collapse">
-                        <thead>
-                            <tr class="bg-gray-100 text-sm"><th class="p-4 font-bold">Waktu</th><th class="p-4 font-bold">Kategori</th><th class="p-4 font-bold">Preview Pesan</th><th class="p-4 font-bold">Status</th><th class="p-4 font-bold text-center">Aksi</th></tr>
-                        </thead>
-                        <tbody id="tableBodyKeluhan"></tbody>
-                    </table>
-                </div>
-            </div>
-
-            <!-- TAB: KELOLA PROMO -->
-            <div id="tab-promo" class="hidden-view space-y-6">
-                <div class="flex justify-between items-center bg-white p-6 rounded-xl shadow-sm border border-gray-200">
-                    <div>
-                        <h1 class="text-2xl font-extrabold text-gray-800">Katalog Promo</h1>
-                        <p class="text-sm text-gray-500">Unggah dan atur gambar promo yang tampil di aplikasi</p>
-                    </div>
-                    <div>
-                        <input type="file" id="inputPromo" accept="image/*" class="hidden" onchange="handleUploadPromo(this)">
-                        <button onclick="document.getElementById('inputPromo').click()" id="btnUploadPromo" class="bg-yogyaGreen text-white px-4 py-2 rounded-lg text-sm font-bold shadow-sm hover:bg-green-700 flex items-center gap-2 active:scale-95 transition">
-                            <span>➕</span> Tambah Promo Baru
-                        </button>
-                    </div>
-                </div>
-                <div id="gridPromo" class="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 gap-6"></div>
-            </div>
-
-        </main>
-    </div>
-
-    <!-- MODAL POP-UP DETAIL KELUHAN -->
-    <div id="detailModal" class="hidden-view fixed inset-0 bg-black/60 z-40 flex items-center justify-center p-4 backdrop-blur-sm">
-        <div class="bg-white rounded-2xl shadow-2xl w-full max-w-lg overflow-hidden flex flex-col max-h-[90vh]">
-            <div class="bg-gray-50 p-4 border-b border-gray-200 flex justify-between items-center">
-                <h3 class="font-bold text-lg text-gray-800">Detail Laporan</h3>
-                <button onclick="closeModal()" class="text-gray-400 hover:text-red-500 font-bold text-xl">&times;</button>
-            </div>
-            <div class="p-6 overflow-y-auto space-y-4">
-                <div class="flex gap-4 border-b border-gray-100 pb-4">
-                    <div class="flex-1">
-                        <p class="text-xs text-gray-400 font-bold uppercase">Pengirim</p><p id="detNama" class="font-bold"></p><a id="detWA" class="text-sm text-blue-600 font-bold" target="_blank"></a>
-                    </div>
-                    <div class="flex-1">
-                        <p class="text-xs text-gray-400 font-bold uppercase">Waktu & Kategori</p><p id="detWaktu" class="text-sm"></p><p id="detKategori" class="text-sm font-bold text-yogyaRed mt-1"></p>
-                    </div>
-                </div>
-                <div>
-                    <p class="text-xs text-gray-400 font-bold uppercase mb-1">Pesan Lengkap</p>
-                    <div id="detPesan" class="p-4 bg-gray-50 rounded-lg text-sm text-gray-700 whitespace-pre-wrap border border-gray-200"></div>
-                </div>
-                <div id="detFotoArea" class="hidden-view">
-                    <p class="text-xs text-gray-400 font-bold uppercase mb-1">Lampiran Foto</p>
-                    <div class="relative group cursor-zoom-in overflow-hidden rounded-lg border border-gray-200 max-h-56 bg-gray-50" onclick="zoomImage()">
-                        <img id="detFotoImg" src="" class="w-full h-full object-contain max-h-56">
-                        <div class="absolute bottom-0 inset-x-0 bg-black/40 text-center py-1 text-[10px] text-white font-bold opacity-0 group-hover:opacity-100 transition-opacity">🔎 Klik perbesar</div>
-                    </div>
-                </div>
-            </div>
-            <div class="bg-gray-50 p-4 border-t border-gray-200 flex gap-2">
-                <select id="statusSelect" class="flex-1 p-2 border border-gray-300 rounded-lg font-bold text-sm focus:ring-2 focus:ring-yogyaGreen">
-                    <option value="Baru_Masuk">🔴 Baru Masuk</option><option value="Diproses">🟡 Sedang Diproses</option><option value="Selesai">🟢 Selesai</option>
-                </select>
-                <button id="btnUpdateStatus" class="bg-yogyaGreen text-white px-4 py-2 rounded-lg text-sm font-bold shadow-md active:scale-95 transition">Simpan Perubahan</button>
-            </div>
+    <!-- DASHBOARD SIDEBAR -->
+    <aside id="sidebar" class="sidebar-transition fixed inset-y-0 left-0 transform -translate-x-full md:relative md:translate-x-0 z-30 w-64 bg-white shadow-xl flex flex-col h-full border-r border-gray-100">
+        <div class="p-6 text-center border-b border-gray-100 relative">
+            <img src="logo_yogya_garut.png" alt="Logo" class="w-24 mx-auto mb-2">
+            <p class="text-xs font-bold text-yogyaGreen uppercase tracking-wider">Admin Panel</p>
+            <!-- Tombol Tutup Sidebar (Hanya Mobile) -->
+            <button onclick="toggleSidebar()" class="md:hidden absolute top-4 right-4 text-gray-400 hover:text-red-500">
+                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+            </button>
         </div>
-    </div>
+        <nav class="flex-1 p-4 space-y-2 overflow-y-auto">
+            <button onclick="switchTab('keluhan')" id="btn-keluhan" class="w-full text-left px-4 py-3 rounded-lg bg-red-50 text-yogyaRed font-bold flex items-center gap-3"><span>📨</span> Data Keluhan</button>
+            <button onclick="switchTab('promo')" id="btn-promo" class="w-full text-left px-4 py-3 rounded-lg text-gray-600 hover:bg-gray-50 font-bold flex items-center gap-3"><span>🏷️</span> Kelola Promo</button>
+        </nav>
+        <div class="p-4 border-t border-gray-100">
+            <button onclick="handleLogout()" class="w-full px-4 py-2 text-sm text-gray-500 hover:text-red-500 font-bold flex items-center justify-center gap-2">Keluar (Logout)</button>
+        </div>
+    </aside>
 
-    <!-- ZOOM LIGHTBOX -->
-    <div id="lightbox" class="hidden-view fixed inset-0 bg-black/95 z-50 flex flex-col items-center justify-center p-4" onclick="closeZoom()">
-        <button class="absolute top-4 right-6 text-white text-3xl font-bold">&times;</button>
-        <img id="lightboxImg" src="" class="max-w-full max-h-[85vh] rounded-lg object-contain transition-transform" />
-        <p class="text-white/60 text-xs mt-3">Klik untuk kembali</p>
-    </div>
-
-    <script>
-        const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbx0aSjDgE9Ep2n10QqDPBzz18jGGD1U0R4X9nJ4yvPTUpDnXCeN0l8TMZYVy0_CHICt/exec';
-        let globalKeluhanData = []; 
-        let globalPromoData = [];
-        let currentImageDirectUrl = '';
-
-        // ================= CEK SESI LOGIN (PERSISTENT) =================
-        document.addEventListener('DOMContentLoaded', () => {
-            const isLogged = localStorage.getItem('yogya_admin_session');
-            if (isLogged === 'active') {
-                document.getElementById('loginScreen').style.display = 'none';
-                document.getElementById('dashboardScreen').classList.remove('hidden-view');
-                initData(); 
-            }
-        });
-
-        function handleLogin(event) {
-            event.preventDefault();
-            if (document.getElementById('userid').value === 'admin' && document.getElementById('password').value === 'yogya123') {
-                localStorage.setItem('yogya_admin_session', 'active'); // Simpan sesi agar tahan refresh
-                document.getElementById('loginScreen').style.display = 'none';
-                document.getElementById('dashboardScreen').classList.remove('hidden-view');
-                initData();
-            } else { alert('User ID atau Password salah!'); }
-        }
-
-        function handleLogout() {
-            if(confirm('Apakah Anda yakin ingin keluar dari Admin Panel?')) {
-                localStorage.removeItem('yogya_admin_session'); // Hapus sesi
-                location.reload(); // Refresh akan mengembalikan ke halaman login
-            }
-        }
-
-        // ================= INIT DATA & CACHING =================
-        function initData() {
-            // Cek Cache Keluhan
-            const cacheKeluhan = sessionStorage.getItem('admin_keluhan_cache');
-            if(cacheKeluhan) {
-                globalKeluhanData = JSON.parse(cacheKeluhan);
-                renderTableKeluhan(globalKeluhanData);
-                fetchDataKeluhanBackground(false); // Update diam-diam
-            } else {
-                fetchDataKeluhanBackground(true);
-            }
-            
-            // Cek Cache Promo
-            const cachePromo = sessionStorage.getItem('admin_promo_cache');
-            if(cachePromo) {
-                globalPromoData = JSON.parse(cachePromo);
-                renderGridPromo(globalPromoData);
-                fetchDataPromoBackground(); // Update diam-diam
-            } else {
-                fetchDataPromoBackground();
-            }
-        }
-
-        // ================= KELUHAN & SARAN (DENGAN CACHE) =================
-        async function fetchDataKeluhanBackground(showLoading = false) {
-            const btn = document.getElementById('btnRefresh');
-            if(showLoading) { 
-                document.getElementById('tableBodyKeluhan').innerHTML = '<tr><td colspan="5" class="p-8 text-center text-gray-500">Memuat data dari server...</td></tr>'; 
-            }
-            if(btn) btn.innerHTML = '⏳ Proses...';
-
-            try {
-                const response = await fetch(SCRIPT_URL + '?action=getKeluhan');
-                const data = await response.json();
-                globalKeluhanData = data; 
-                sessionStorage.setItem('admin_keluhan_cache', JSON.stringify(data));
-                renderTableKeluhan(data);
-            } catch (error) { 
-                if(showLoading) document.getElementById('tableBodyKeluhan').innerHTML = '<tr><td colspan="5" class="p-4 text-center text-red-500">Koneksi ke database gagal.</td></tr>'; 
-            } finally {
-                if(btn) btn.innerHTML = '🔄 Segarkan';
-            }
-        }
-
-        function renderTableKeluhan(data) {
-            const tbody = document.getElementById('tableBodyKeluhan');
-            tbody.innerHTML = ''; 
-            if(data.length === 0) { tbody.innerHTML = '<tr><td colspan="5" class="p-4 text-center text-gray-500">Belum ada data keluhan.</td></tr>'; return; }
-            data.forEach((item, index) => {
-                let statusColor = item.status === 'Baru_Masuk' ? 'bg-red-100 text-red-700' : item.status === 'Diproses' ? 'bg-yellow-100 text-yellow-700' : 'bg-green-100 text-green-700';
-                tbody.innerHTML += `
-                    <tr class="border-b border-gray-100 hover:bg-gray-50 transition">
-                        <td class="p-4 text-sm text-gray-600">${item.waktu.substring(0, 10)}</td><td class="p-4 text-sm font-bold">${item.kategori}</td>
-                        <td class="p-4 text-sm text-gray-700"><p class="truncate w-48">${item.pesan}</p></td>
-                        <td class="p-4"><span class="${statusColor} px-2 py-1 rounded text-xs font-bold">${item.status.replace('_', ' ')}</span></td>
-                        <td class="p-4 text-center space-x-2"><button onclick="openModal(${index})" class="bg-blue-50 text-blue-600 px-3 py-1.5 rounded-lg text-xs font-bold border border-blue-200">👁️ Lihat</button><button onclick="hapusDataKeluhan(${item.baris})" class="bg-red-50 text-red-600 px-3 py-1.5 rounded-lg text-xs font-bold border border-red-200">🗑️ Hapus</button></td>
-                    </tr>`;
-            });
-        }
-
-        // ================= FITUR EXPORT EXCEL & PDF =================
-        function exportExcel() {
-            if(globalKeluhanData.length === 0) return alert("Belum ada data untuk diekspor!");
-            // 1. Siapkan data yang rapi untuk Excel
-            const dataToExport = globalKeluhanData.map(item => ({
-                "Waktu Laporan": item.waktu,
-                "Nama Pelanggan": item.nama || 'Anonim',
-                "No. WhatsApp": item.whatsapp,
-                "Kategori Masukan": item.kategori,
-                "Isi Pesan/Cerita": item.pesan,
-                "Status Penanganan": item.status.replace('_', ' '),
-                "Link Foto Bukti": item.foto !== 'Tidak_Ada_Foto' ? item.foto : 'Tidak ada lampiran'
-            }));
-            
-            // 2. Buat Worksheet & Workbook menggunakan SheetJS
-            const worksheet = XLSX.utils.json_to_sheet(dataToExport);
-            const workbook = XLSX.utils.book_new();
-            XLSX.utils.book_append_sheet(workbook, worksheet, "Laporan Yogya Garut");
-            
-            // 3. Download File
-            XLSX.writeFile(workbook, "Laporan_Keluhan_Saran_Yogya_Garut.xlsx");
-        }
-
-        function exportPDF() {
-            if(globalKeluhanData.length === 0) return alert("Belum ada data untuk diekspor!");
-            
-            const { jsPDF } = window.jspdf;
-            const doc = new jsPDF('landscape'); // Format Landscape agar tabel muat banyak
-            
-            // Judul PDF
-            doc.setFontSize(16);
-            doc.text("Laporan Data Keluhan & Saran Yogya Garut", 14, 15);
-            doc.setFontSize(10);
-            doc.setTextColor(100);
-            doc.text("Dicetak pada: " + new Date().toLocaleString("id-ID"), 14, 22);
-
-            // Menyiapkan Data Tabel untuk PDF
-            const tableColumn = ["Waktu", "Nama", "WhatsApp", "Kategori", "Isi Pesan", "Status"];
-            const tableRows = [];
-
-            globalKeluhanData.forEach(item => {
-                const rowData = [
-                    item.waktu,
-                    item.nama || 'Anonim',
-                    item.whatsapp,
-                    item.kategori,
-                    item.pesan,
-                    item.status.replace('_', ' ')
-                ];
-                tableRows.push(rowData);
-            });
-
-            // Eksekusi AutoTable
-            doc.autoTable({
-                head: [tableColumn],
-                body: tableRows,
-                startY: 28,
-                styles: { font: "helvetica", fontSize: 9 },
-                headStyles: { fillColor: [0, 138, 69] }, // Warna Hijau Yogya
-                columnStyles: { 4: { cellWidth: 90 } }, // Lebarkan kolom pesan
-                theme: 'striped'
-            });
-
-            // Download PDF
-            doc.save("Laporan_Keluhan_Yogya_Garut.pdf");
-        }
-
-        // ================= MODAL & ZOOM KELUHAN =================
-        function getDriveDirectLink(url) {
-            if (!url || url === 'Tidak_Ada_Foto' || url === 'Tidak ada foto') return '';
-            let id = ''; const match1 = url.match(/\/file\/d\/([^\/]+)/); const match2 = url.match(/id=([^&]+)/);
-            if (match1) id = match1[1]; else if (match2) id = match2[1];
-            return id ? `https://drive.google.com/thumbnail?id=${id}&sz=w1000` : url;
-        }
-
-        function openModal(index) {
-            const data = globalKeluhanData[index];
-            document.getElementById('detNama').innerText = data.nama || 'Anonim';
-            document.getElementById('detWA').innerText = data.whatsapp && data.whatsapp !== '-' ? data.whatsapp : 'Tidak melampirkan WA';
-            document.getElementById('detWA').href = data.whatsapp && data.whatsapp !== '-' ? `https://wa.me/${data.whatsapp}` : '#';
-            document.getElementById('detWaktu').innerText = data.waktu; document.getElementById('detKategori').innerText = data.kategori; document.getElementById('detPesan').innerText = data.pesan;
-            
-            const fotoArea = document.getElementById('detFotoArea');
-            if(data.foto && data.foto !== 'Tidak_Ada_Foto') {
-                fotoArea.classList.remove('hidden-view'); currentImageDirectUrl = getDriveDirectLink(data.foto); document.getElementById('detFotoImg').src = currentImageDirectUrl;
-            } else { fotoArea.classList.add('hidden-view'); currentImageDirectUrl = ''; }
-
-            document.getElementById('statusSelect').value = data.status;
-            document.getElementById('detailModal').classList.remove('hidden-view');
-            document.getElementById('btnUpdateStatus').onclick = () => updateStatus(data.baris);
-        }
-
-        function closeModal() { document.getElementById('detailModal').classList.add('hidden-view'); }
-        function zoomImage() { if(currentImageDirectUrl) { document.getElementById('lightboxImg').src = currentImageDirectUrl; document.getElementById('lightbox').classList.remove('hidden-view'); } }
-        function closeZoom() { document.getElementById('lightbox').classList.add('hidden-view'); }
-
-        async function updateStatus(baris) {
-            const statusBaru = document.getElementById('statusSelect').value; const btn = document.getElementById('btnUpdateStatus');
-            btn.innerText = 'Menyimpan...'; btn.disabled = true;
-            try { await fetch(SCRIPT_URL, { method: 'POST', mode: 'no-cors', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ action: 'update', baris: baris, status: statusBaru }) });
-                closeModal(); fetchDataKeluhanBackground(true); 
-            } catch(e) { alert('Gagal update status!'); } finally { btn.innerText = 'Simpan Perubahan'; btn.disabled = false; }
-        }
-
-        async function hapusDataKeluhan(baris) {
-            if(confirm('Hapus keluhan ini permanen?')) {
-                try { await fetch(SCRIPT_URL, { method: 'POST', mode: 'no-cors', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ action: 'delete', baris: baris }) });
-                    fetchDataKeluhanBackground(true); 
-                } catch(e) { alert('Gagal menghapus data!'); }
-            }
-        }
-
-        // ================= KELOLA PROMO =================
-        async function fetchDataPromoBackground() {
-            try {
-                const response = await fetch(SCRIPT_URL + '?action=getPromo');
-                const data = await response.json();
-                globalPromoData = data;
-                sessionStorage.setItem('admin_promo_cache', JSON.stringify(data));
-                renderGridPromo(data);
-            } catch (error) { console.log('Gagal fetch promo background'); }
-        }
-
-        function renderGridPromo(data) {
-            const grid = document.getElementById('gridPromo');
-            grid.innerHTML = '';
-            if(data.length === 0) { grid.innerHTML = '<div class="col-span-3 bg-white p-8 text-center rounded-xl border border-gray-200 border-dashed text-gray-500 font-bold">Belum ada promo yang diunggah.</div>'; return; }
-            data.forEach(item => {
-                let imgUrl = getDriveDirectLink(item.foto);
-                grid.innerHTML += `
-                    <div class="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden relative group">
-                        <img src="${imgUrl}" class="w-full h-56 object-cover bg-gray-100">
-                        <div class="p-4"><p class="text-xs font-bold text-gray-800">Diunggah: ${item.waktu.substring(0, 10)}</p></div>
-                        <div class="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition flex justify-center items-center backdrop-blur-sm">
-                            <button onclick="hapusPromo(${item.baris})" class="bg-red-500 text-white font-bold py-2 px-4 rounded-lg shadow-lg hover:bg-red-600 transition">🗑️ Hapus Banner</button>
-                        </div>
-                    </div>`;
-            });
-        }
-
-        function getBase64(file) {
-            return new Promise((resolve, reject) => {
-                const reader = new FileReader(); reader.readAsDataURL(file);
-                reader.onload = () => resolve(reader.result); reader.onerror = error => reject(error);
-            });
-        }
-
-        async function handleUploadPromo(input) {
-            if (!input.files || !input.files[0]) return;
-            const file = input.files[0];
-            if (file.size > 3000000) { alert('Maksimal ukuran gambar promo 3MB!'); return; }
-            
-            const btn = document.getElementById('btnUploadPromo');
-            const originalText = btn.innerHTML;
-            btn.innerHTML = `Mengunggah...`; btn.disabled = true;
-
-            try {
-                let imageBase64 = await getBase64(file);
-                await fetch(SCRIPT_URL, {
-                    method: 'POST', mode: 'no-cors', headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ action: 'uploadPromo', image: imageBase64 })
-                });
-                alert('Berhasil mengunggah Promo!');
-                fetchDataPromoBackground(); // Refresh
-            } catch (error) { alert('Gagal mengunggah foto. Pastikan internet stabil.'); }
-            finally { btn.innerHTML = originalText; btn.disabled = false; input.value = ''; }
-        }
-
-        async function hapusPromo(baris) {
-            if(confirm('Hapus banner promo ini? Gambar tidak akan tampil lagi di aplikasi pelanggan.')) {
-                try {
-                    await fetch(SCRIPT_URL, { method: 'POST', mode: 'no-cors', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ action: 'deletePromo', baris: baris }) });
-                    fetchDataPromoBackground();
-                } catch(e) { alert('Gagal menghapus promo!'); }
-            }
-        }
-
-        // ================= TAB NAVIGATION =================
-        function switchTab(tabName) {
-            document.getElementById('tab-keluhan').classList.toggle('hidden-view', tabName !== 'keluhan');
-            document.getElementById('tab-promo').classList.toggle('hidden-view', tabName !== 'promo');
-            document.getElementById('btn-keluhan').className = tabName === 'keluhan' ? 'w-full text-left px-4 py-3 rounded-lg bg-red-50 text-yogyaRed font-bold flex items-center gap-3' : 'w-full text-left px-4 py-3 rounded-lg text-gray-600 hover:bg-gray-50 font-bold flex items-center gap-3';
-            document.getElementById('btn-promo').className = tabName === 'promo' ? 'w-full text-left px-4 py-3 rounded-lg bg-green-50 text-yogyaGreen font-bold flex items-center gap-3' : 'w-full text-left px-4 py-3 rounded-lg text-gray-600 hover:bg-gray-50 font-bold flex items-center gap-3';
-        }
-    </script>
-</body>
-</html>
+    <!-- Main Content -->
+    <div id="dashboardScreen" class="hidden-view flex-1 flex flex-col h-full overflow-hidden bg-gray-50 w-full">
+        
+        <!-- HEADER MOBILE (Hanya muncul di HP) -->
+        <div class="md:hidden flex items-center justify-between bg-white p-4 shadow-sm z-10 w-full border-b border-gray-200">
+            <div class="flex items-center gap-2">
+                <img src="logo_yogya_garut.png" alt="Logo" class="
