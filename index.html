@@ -27,15 +27,8 @@
         @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: .5; } }
 
         /* Styling Interaktif untuk Zoom Container */
-        #promoLightboxImg {
-            transform-origin: center center;
-            transition: transform 0.1s ease-out;
-            touch-action: none;
-            cursor: grab;
-        }
-        #promoLightboxImg:active {
-            cursor: grabbing;
-        }
+        #promoLightboxImg { transform-origin: center center; transition: transform 0.1s ease-out; touch-action: none; cursor: grab; }
+        #promoLightboxImg:active { cursor: grabbing; }
     </style>
 </head>
 <body class="bg-gray-50 min-h-screen flex flex-col font-sans relative overflow-x-hidden text-gray-800 max-w-md mx-auto shadow-2xl bg-white">
@@ -122,7 +115,8 @@
                     <div class="grid grid-cols-2 gap-3">
                         <label class="cursor-pointer"><input type="radio" name="kategori" value="Pelayanan" class="category-radio hidden" required><div class="border-2 border-gray-200 rounded-xl p-3 text-center transition hover:border-red-200"><span class="text-2xl block mb-1">🗣️</span><span class="text-xs font-bold text-gray-600">Pelayanan</span></div></label>
                         <label class="cursor-pointer"><input type="radio" name="kategori" value="Kebersihan" class="category-radio hidden"><div class="border-2 border-gray-200 rounded-xl p-3 text-center transition hover:border-red-200"><span class="text-2xl block mb-1">🧹</span><span class="text-xs font-bold text-gray-600">Kebersihan</span></div></label>
-                        <label class="cursor-pointer"><input type="radio" name="kategori" value="Produk" class="category-radio hidden"><div class="border-2 border-gray-200 rounded-xl p-3 text-center transition hover:border-red-200"><span class="text-2xl block mb-1">📦</span><span class="text-xs font-bold text-gray-600">Stok/Produk</span></div></label>
+                        <!-- KATEGORI DIUBAH MENJADI HARGA -->
+                        <label class="cursor-pointer"><input type="radio" name="kategori" value="Harga" class="category-radio hidden"><div class="border-2 border-gray-200 rounded-xl p-3 text-center transition hover:border-red-200"><span class="text-2xl block mb-1">🏷️</span><span class="text-xs font-bold text-gray-600">Harga Produk</span></div></label>
                         <label class="cursor-pointer"><input type="radio" name="kategori" value="Saran" class="category-radio hidden"><div class="border-2 border-gray-200 rounded-xl p-3 text-center transition hover:border-red-200"><span class="text-2xl block mb-1">💡</span><span class="text-xs font-bold text-gray-600">Saran Ide</span></div></label>
                     </div>
                 </div>
@@ -134,11 +128,16 @@
 
                 <div class="pb-4">
                     <label class="block text-sm font-bold text-gray-700 mb-1">Foto Bukti (Opsional)</label>
-                    <div class="relative border-2 border-dashed border-gray-300 rounded-xl p-4 text-center hover:bg-gray-50 transition cursor-pointer" onclick="document.getElementById('foto').click()">
+                    <div id="uploadArea" class="relative border-2 border-dashed border-gray-300 rounded-xl p-4 text-center hover:bg-gray-50 transition cursor-pointer" onclick="document.getElementById('foto').click()">
                         <input type="file" id="foto" accept="image/*" class="hidden" onchange="previewFileName(this)">
-                        <svg class="mx-auto h-8 w-8 text-gray-400 mb-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg>
-                        <p id="fileName" class="text-xs text-gray-500 font-semibold">Ketuk untuk pilih foto</p>
+                        <svg id="uploadIcon" class="mx-auto h-8 w-8 text-gray-400 mb-1 transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg>
+                        <p id="fileName" class="text-xs text-gray-500 font-semibold truncate px-2">Ketuk untuk pilih foto</p>
                     </div>
+                    <!-- TOMBOL HAPUS FOTO (MUNYEMBUNYI JIKA KOSONG) -->
+                    <button type="button" id="btnHapusFoto" onclick="hapusFoto(event)" class="hidden-view mt-3 text-sm font-bold text-red-500 hover:text-red-700 bg-red-50 py-2 w-full rounded-xl border border-red-100 flex items-center justify-center gap-1 active:scale-95 transition">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M6 18L18 6M6 6l12 12"></path></svg>
+                        Batal Sertakan Foto
+                    </button>
                 </div>
 
                 <button type="submit" id="btnSubmit" class="w-full bg-yogyaRed text-white font-extrabold py-4 rounded-xl shadow-lg shadow-red-200 active:scale-95 transition-all flex justify-center items-center gap-2">
@@ -277,7 +276,7 @@
         }
 
         // ===============================================
-        // FUNGSI MEMUAT PROMO DENGAN "CACHING" SUPER NGEBUT
+        // FUNGSI MEMUAT PROMO DARI GOOGLE SHEETS
         // ===============================================
         function getDriveDirectLink(url) {
             if (!url || url === 'Tidak_Ada_Foto' || url === 'Tidak ada foto') return '';
@@ -287,31 +286,16 @@
         }
 
         async function loadCustomerPromo() {
-            // 1. Cek Data di Memori HP Pelanggan
             const cachedPromo = sessionStorage.getItem('yogya_promo_cache');
-            
-            if (cachedPromo) {
-                // Jika sudah ada cache, tampilkan langsung secara instan (0 detik)
-                renderPromoSlides(JSON.parse(cachedPromo));
-                // Update diam-diam di latar belakang
-                fetchPromoBackground(); 
-                return;
-            }
+            if (cachedPromo) { renderPromoSlides(JSON.parse(cachedPromo)); fetchPromoBackground(); return; }
 
-            // 2. Jika belum ada cache, ambil dari Server
             try {
                 const response = await fetch(SCRIPT_URL + '?action=getPromo');
                 const data = await response.json();
-                
-                // Simpan ke memori untuk kunjungan berikutnya
                 sessionStorage.setItem('yogya_promo_cache', JSON.stringify(data));
                 renderPromoSlides(data);
-                
             } catch (error) {
-                document.getElementById('promoWrapper').innerHTML = `
-                    <div class="swiper-slide flex justify-center items-center bg-white text-center p-6">
-                        <p class="text-red-500 font-bold text-sm">Gagal memuat katalog promo.</p>
-                    </div>`;
+                document.getElementById('promoWrapper').innerHTML = `<div class="swiper-slide flex justify-center items-center bg-white text-center p-6"><p class="text-red-500 font-bold text-sm">Gagal memuat katalog promo.</p></div>`;
             }
         }
 
@@ -320,14 +304,7 @@
             wrapper.innerHTML = ''; 
             
             if(data.length === 0) {
-                wrapper.innerHTML = `
-                    <div class="swiper-slide flex justify-center items-center bg-white p-6 text-center">
-                        <div>
-                            <span class="text-4xl block mb-2">🛒</span>
-                            <p class="text-gray-500 font-bold text-sm">Belum ada promo aktif saat ini.</p>
-                            <p class="text-gray-400 text-xs mt-1">Silakan cek kembali nanti.</p>
-                        </div>
-                    </div>`;
+                wrapper.innerHTML = `<div class="swiper-slide flex justify-center items-center bg-white p-6 text-center"><div><span class="text-4xl block mb-2">🛒</span><p class="text-gray-500 font-bold text-sm">Belum ada promo aktif saat ini.</p><p class="text-gray-400 text-xs mt-1">Silakan cek kembali nanti.</p></div></div>`;
             } else {
                 data.forEach(item => {
                     let imgUrl = getDriveDirectLink(item.foto);
@@ -335,43 +312,83 @@
                         <div class="swiper-slide flex justify-center items-center relative bg-white cursor-pointer group" onclick="openPromoZoom('${imgUrl}')">
                             <img src="${imgUrl}" alt="Promo Yogya Garut" class="w-full h-full object-cover">
                             <div class="absolute bottom-3 right-3 bg-black/60 text-white text-[10px] font-bold px-3 py-1.5 rounded-full backdrop-blur-sm shadow-md group-hover:scale-105 transition-transform flex items-center gap-1">
-                                <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0zM10 7v3m0 0v3m0-3h3m-3 0H7"></path></svg>
-                                Ketuk Perbesar
+                                <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0zM10 7v3m0 0v3m0-3h3m-3 0H7"></path></svg> Ketuk Perbesar
                             </div>
                         </div>`;
                 });
             }
-            swiperInstance.update();
-            swiperInstance.slideTo(0);
+            swiperInstance.update(); swiperInstance.slideTo(0);
         }
 
-        // Fungsi fetch rahasia di latar belakang agar data selalu fresh
         async function fetchPromoBackground() {
             try {
                 const response = await fetch(SCRIPT_URL + '?action=getPromo');
                 const data = await response.json();
                 sessionStorage.setItem('yogya_promo_cache', JSON.stringify(data));
-            } catch (error) { console.log('Pembaruan latar belakang gagal, menggunakan cache lama.'); }
+            } catch (error) { console.log('Pembaruan latar belakang gagal.'); }
         }
 
         // ===============================================
-        // FUNGSI FORM KELUHAN
+        // FUNGSI FORM KELUHAN & HAPUS FOTO
         // ===============================================
         function previewFileName(input) {
             const fileNameText = document.getElementById('fileName');
+            const btnHapus = document.getElementById('btnHapusFoto');
+            const icon = document.getElementById('uploadIcon');
+            
             if (input.files && input.files[0]) {
                 fileNameText.textContent = input.files[0].name;
                 fileNameText.classList.replace('text-gray-500', 'text-yogyaRed');
+                btnHapus.classList.remove('hidden-view');
+                icon.classList.replace('text-gray-400', 'text-yogyaGreen'); // Ubah warna ikon saat foto terpilih
             } else {
-                fileNameText.textContent = 'Ketuk untuk pilih foto';
-                fileNameText.classList.replace('text-yogyaRed', 'text-gray-500');
+                hapusFoto();
             }
         }
 
-        function getBase64(file) {
+        function hapusFoto(event) {
+            if(event) event.stopPropagation(); // Mencegah klik menembus ke kotak upload
+            const input = document.getElementById('foto');
+            input.value = ''; // Mengosongkan file yang dipilih
+            
+            document.getElementById('fileName').textContent = 'Ketuk untuk pilih foto';
+            document.getElementById('fileName').classList.replace('text-yogyaRed', 'text-gray-500');
+            document.getElementById('uploadIcon').classList.replace('text-yogyaGreen', 'text-gray-400');
+            document.getElementById('btnHapusFoto').classList.add('hidden-view');
+        }
+
+        // ===============================================
+        // FUNGSI KOMPRESI GAMBAR (CLIENT-SIDE)
+        // ===============================================
+        function compressImage(file, maxWidth, maxHeight, quality) {
             return new Promise((resolve, reject) => {
-                const reader = new FileReader(); reader.readAsDataURL(file);
-                reader.onload = () => resolve(reader.result); reader.onerror = error => reject(error);
+                const reader = new FileReader();
+                reader.readAsDataURL(file);
+                reader.onload = (event) => {
+                    const img = new Image();
+                    img.src = event.target.result;
+                    img.onload = () => {
+                        let width = img.width; let height = img.height;
+
+                        // Kalkulasi rasio ukuran baru
+                        if (width > height) {
+                            if (width > maxWidth) { height = Math.round(height *= maxWidth / width); width = maxWidth; }
+                        } else {
+                            if (height > maxHeight) { width = Math.round(width *= maxHeight / height); height = maxHeight; }
+                        }
+
+                        // Menggambar ulang foto dengan ukuran lebih kecil
+                        const canvas = document.createElement('canvas');
+                        canvas.width = width; canvas.height = height;
+                        const ctx = canvas.getContext('2d');
+                        ctx.drawImage(img, 0, 0, width, height);
+
+                        // Output foto yang sudah dikompres menjadi JPEG
+                        resolve(canvas.toDataURL('image/jpeg', quality));
+                    };
+                    img.onerror = (error) => reject(error);
+                };
+                reader.onerror = (error) => reject(error);
             });
         }
 
@@ -392,8 +409,16 @@
                 let imageBase64 = ''; let filename = '';
 
                 if (fileInput) {
-                    if (fileInput.size > 2000000) { alert('Ukuran foto terlalu besar. Maksimal 2MB.'); btn.innerHTML = originalText; btn.disabled = false; return; }
-                    imageBase64 = await getBase64(fileInput); filename = fileInput.name;
+                    // Cek batas ukuran maksimal (15MB), mencegah HP lemot saat proses kompresi
+                    if (fileInput.size > 15000000) { 
+                        alert('Ukuran foto terlalu besar (Lebih dari 15MB). Mohon gunakan foto lain.'); 
+                        btn.innerHTML = originalText; btn.disabled = false; btn.classList.remove('opacity-75');
+                        return; 
+                    }
+                    
+                    // KOMPRESI OTOMATIS: Max dimensi 1200px, Kualitas 70%
+                    imageBase64 = await compressImage(fileInput, 1200, 1200, 0.7); 
+                    filename = 'Bukti_' + new Date().getTime() + '.jpg';
                 }
 
                 const payload = {
@@ -405,8 +430,7 @@
 
                 alert('Terima kasih! Masukan Anda telah kami terima.');
                 document.getElementById('pengaduanForm').reset();
-                document.getElementById('fileName').textContent = 'Ketuk untuk pilih foto';
-                document.getElementById('fileName').classList.replace('text-yogyaRed', 'text-gray-500');
+                hapusFoto(); // Reset tampilan foto otomatis
                 toggleView('menuView');
 
             } catch (error) { alert('Gagal mengirim data. Pastikan internet Anda stabil.'); } 
